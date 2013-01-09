@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module TokenFeatures
 
   QUOTES = Regexp.escape('"\'”’´‘“`')
