@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_support/core_ext/object'
+require 'crfpp'
 require 'crfparser'
 
 module FreeCite
