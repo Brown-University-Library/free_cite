@@ -1,5 +1,7 @@
-require 'postprocessor'
-require 'token_features'
+# encoding: UTF-8
+
+require 'free_cite/postprocessor'
+require 'free_cite/token_features'
 require 'tempfile'
 
 class CRFParser
@@ -20,11 +22,11 @@ class CRFParser
   # Feature functions must be performed in alphabetical order, since
   # later functions may depend on earlier ones.
   # If you want to specify a specific output order, do so in a yaml file in
-  # config. See ../config/parscit_features.yml as an example
+  # config. See ../../config/parscit_features.yml as an example
   # You may also use this config file to specify a subset of features to use
   # Just be careful not to exclude any functions that included functions
   # depend on
-  def initialize(config_file="#{DIR}/../config/parscit_features.yml")
+  def initialize(config_file="#{DIR}/../../config/parscit_features.yml")
     if config_file
       f = File.open(config_file, 'r')
       hsh = YAML::load( f )
@@ -53,28 +55,6 @@ class CRFParser
     ret['raw_string'] = str
     ret
   end
-
-=begin
-  def eval_command(feat_seq)
-    fout = Tempfile.new("crfout", "#{DIR}/../tmp")
-    feat_seq.each {|l| fout.write "#{l.join(" ")}\n"}
-    fout.flush
-    fout.close false
-    fin = Tempfile.new("crfin", "#{DIR}/../tmp")
-    fin.close false
-    `crf_test -m #{MODEL_FILE} #{fout.path} > #{fin.path}`
-
-    ret = []
-    fin.open
-    while l = fin.gets
-      r = l.strip.split.last
-      ret << r if r
-    end
-    fin.close true
-    fout.close true
-    ret
-  end
-=end
 
   def eval_crfpp(feat_seq)
     model.clear
@@ -184,6 +164,4 @@ class CRFParser
 end
 
 class TrainingError < Exception; end
-
-
 

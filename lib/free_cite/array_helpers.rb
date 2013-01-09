@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 class Array
   def mean
     (size > 0) ? sum.to_f / size : 0

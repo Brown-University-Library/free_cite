@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Postprocessor
 
   def normalize_fields(citation_hsh)
