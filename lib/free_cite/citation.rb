@@ -7,6 +7,7 @@ require 'free_cite/crfparser'
 class Citation
 
   def self.parse(str)
+    return unless str.present?
     hash = self.parser.parse_string(str).symbolize_keys
     hash if self.valid_reference?(hash)
   end

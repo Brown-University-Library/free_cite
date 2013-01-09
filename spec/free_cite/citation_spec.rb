@@ -2,8 +2,17 @@
 
 describe Citation do
 
+  it "handles nil" do
+    Citation.parse(nil).should be_nil
+  end
+
   it "handles empty string" do
     Citation.parse("").should be_nil
+  end
+
+  it "handles non-ASCII unicode characters" do
+    hash = Citation.parse("Okuda, Michael, and Denise Okuda. 1993. Star trek chronology » The history of the future りがと. New York: Pocket Books.")
+    hash[:title].should == "Star trek chronology » The history of the future"
   end
 
   it "returns nil for non-citation string" do

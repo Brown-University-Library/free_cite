@@ -169,7 +169,7 @@ module Postprocessor
   # Insert underscores to join name particles. i.e.
   # Jon de Groote ---> Jon de_Groote
   def join_multi_word_names(author_text)
-    author_text.gsub(/\b((?:van|von|der|den|de|di|le|el))\s/si) {
+    author_text.gsub(/\b((?:van|von|der|den|de|di|le|el))\s/i) {
       "#{$1}_"
     }
   end
