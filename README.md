@@ -2,7 +2,7 @@
 
 Stripped-down version of [FreeCite](http://freecite.library.brown.edu/) which provides a Ruby API for citation parsing.
 
-## Install reqeired packages
+## Install required packages
 
 ### From source
 
