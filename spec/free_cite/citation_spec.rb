@@ -48,7 +48,7 @@ describe Citation do
     hash[:title].should == 'Shifting roles and synthetic women in Star trek: The next generation'
   end
 
-  context "not yet working"
+  context "not yet working" do
 
     before do
       pending "would be nice to fix at least some of these"
