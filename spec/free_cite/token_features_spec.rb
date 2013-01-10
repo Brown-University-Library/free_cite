@@ -256,7 +256,6 @@ describe TokenFeatures do
   end
 
   it 'possible_chapter' do
-
     refs = ['Flajolet, P., Gourdon, X., and Panario, D.   Random polynomials and polynomial factorization.   In Automata, Languages, and Programming   (1996),   F. Meyer auf der Heide and B. Monien, Eds.,   vol. 1099,   of Lecture Notes in Computer Science,   Springer-Verlag,   pp. 232-243.   Proceedings of the 23rd ICALP Conference, Paderborn,   July 1996.',
     'JA Anderson (1977). Neural models with cognitive implications. In: D. LaBerge and S.J. Samuels (Eds .), Basic Processes in Reading: Perception and Comprehension . Hillsdale, New Jersey: Erlbaum Associates.',
     'Morgan, J.R. and Yarmush M.L. Gene Therapy in Tissue Engineering. In "Frontiers in Tissue Engineering", Patrick, Jr., CW, Mikos, AG, McIntire, LV, (eds.) Pergamon; Elsevier Science Publishers, Amsterdam, The Netherlands 1998; Chapter II.15 278- 310.',
@@ -265,11 +264,7 @@ describe TokenFeatures do
 
     not_refs = ['Morse, D. H. 2006. Predator upon a flower. In final revision, scheduled for publication in Fall 2006 or Winter 2007. Harvard University Press. (ca. 400 pp.).',
     'Goldstein J, Perello M, and Nillni EA . 2005. PreproThyrotropin-Releasing Hormone178-199 Affects Tyrosine Hydroxylase Biosynthesis in Hypothalamic Neurons: a Possible Role for Pituitary Prolactin Regulation . In press Journal of Molecular Neuroscience 2006.',
-    'Mulcahy LR, and Nillni EA. 2007 . Invited Review. The role of prohormone processing in the physiology of energy balance. Frontiers in Bioscience.'
-
-
-
-    ]
+    'Mulcahy LR, and Nillni EA. 2007 . Invited Review. The role of prohormone processing in the physiology of energy balance. Frontiers in Bioscience.']
   end
 
   private

@@ -174,8 +174,8 @@ module TokenFeatures
   end
 
   def punct(toks, toksnp, tokslcnp, idx)
-    (toks[idx]   =~ /^[\"\'\`]/)                    ? "leadQuote"   :
-      (toks[idx] =~ /[\"\'\`][^s]?$/)               ? "endQuote"    :
+    (toks[idx]   =~ /^[#{QUOTES}]/)                    ? "leadQuote"   :
+      (toks[idx] =~ /[#{QUOTES}][^s]?$/)               ? "endQuote"    :
       (toks[idx] =~ /\-.*\-/)                       ? "multiHyphen" :
       (toks[idx] =~ /[\-\,\:\;]$/)                  ? "contPunct"   :
       (toks[idx] =~ /[\!\?\.\"\']$/)                ? "stopPunct"   :
