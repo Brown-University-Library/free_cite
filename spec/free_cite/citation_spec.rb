@@ -48,15 +48,20 @@ describe Citation do
     hash[:title].should == 'Shifting roles and synthetic women in Star trek: The next generation'
   end
 
+  it "parses title for journal article with volume" do
+    hash = Citation.parse("Watts, S. & Bagnoli, M. (2010). Oligopoly, Disclosure and Earnings Management. The Accounting Review, vol. 85 (4), 1191-1214.")
+    hash[:title].should == "Oligopoly, Disclosure and Earnings Management"
+  end
+
+  it "parses title for MLA journal article" do
+    hash = Citation.parse('Hodges, F. M. "The Promised Planet: Alliances and Struggles of the Gerontocracy in American Television Science Fiction of the 1960s." Aging Male 6.3 (2003)')
+    hash[:title].should == "The Promised Planet: Alliances and Struggles of the Gerontocracy in American Television Science Fiction of the 1960s"
+  end
+
   context "not yet working" do
 
     before do
       pending "would be nice to fix at least some of these"
-    end
-
-    it "parses title for journal article with volume" do
-      hash = Citation.parse("Watts, S. & Bagnoli, M. (2010). Oligopoly, Disclosure and Earnings Management. The Accounting Review, vol. 85 (4), 1191-1214.")
-      hash[:title].should == "Oligopoly, Disclosure and Earnings Management"
     end
 
     it "parses title for AMA journal article" do
@@ -64,22 +69,17 @@ describe Citation do
       hash[:title].should == 'Shifting roles and synthetic women in Star trek: The next generation'
     end
 
-    it "parses title for MLA journal article" do
-      hash = Citation.parse('Hodges, F. M. "The Promised Planet: Alliances and Struggles of the Gerontocracy in American Television Science Fiction of the 1960s." Aging Male 6.3 (2003)')
-      hash[:title].should == "The Promised Planet: Alliances and Struggles of the Gerontocracy in American Television Science Fiction of the 1960s."
-    end
-
-    it "handles parenthetical comment" do
+    it "parses parenthetical comment" do
       hash = Citation.parse('The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos (University of Pittsburgh Press 2005). (Awarded the Metaphysical Society of America’s 2007 John N. Findlay Book Prize.)')
       hash[:title].should == 'The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos'
     end
 
-    it "handles quoted journal article title" do
+    it "parses quoted journal article title" do
       hash = Citation.parse('“Standing in Livestock’s ‘Long Shadow’: The Ethics of Eating Meat on a Small Planet,” Ethics & the Environment 16 (2011): 63-93. (pdf)')
       hash[:title].should == 'Standing in Livestock’s ‘Long Shadow’: The Ethics of Eating Meat on a Small Planet'
     end
 
-    it "handles citation prefixed by number" do
+    it "parses citation prefixed by number" do
       hash = Citation.parse('1.“ Mechanisms of network collapse in GeO2 glass: high-pressure neutron diffraction with isotope substitution as arbitrator of competing models ” Kamil Wezka ,Philip Salmon, Anita Ziedler, Dean Whittaker, James Drewitt, Stefan Klotz, Harry Fisher and D Marrocchelli, Journal of Physics: Condensed Matter 24 502101 (2012)')
       hash[:title].should == 'Mechanisms of network collapse in GeO2 glass: high-pressure neutron diffraction with isotope substitution as arbitrator of competing models'
     end
