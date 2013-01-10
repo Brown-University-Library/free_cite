@@ -129,6 +129,10 @@ class CRFParser
       features << [tok]
       @feature_order.each {|f| features.last << feats[f]}
       features.last << tag if training
+
+      if toki >= tokens.length
+        break
+      end
     }
     return features
   end
