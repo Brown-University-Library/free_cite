@@ -12,5 +12,11 @@ namespace :crfparser do
   task :train_model do
     CRFParser.new.train
   end
+
+  desc 'test a CRF model with the current training set & features'
+  task :test_model do
+    require "#{File.dirname(__FILE__)}/model/test/model_test"
+    ModelTest.new.run_test
+  end
 end
 

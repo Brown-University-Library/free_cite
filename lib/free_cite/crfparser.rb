@@ -144,7 +144,7 @@ class CRFParser
     fout = File.open(training_data, 'w')
     x = 0
     while l = fin.gets
-      puts "processed a line #{x+=1}"
+      #puts "processed a line #{x+=1}"
       data = str_2_features(l.strip, true)
       data.each {|line| fout.write("#{line.join(" ")}\n") }
       fout.write("\n")
