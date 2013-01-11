@@ -15,9 +15,13 @@ class Citation < Hash
     end
   end
 
+  def self.parser
+    @parser ||= CRFParser.new
+  end
+
   def initialize(str)
     transformed_versions_to_try(str).each do |v|
-      raw_hash = parser.parse_string(v) || {}
+      raw_hash = self.class.parser.parse_string(v) || {}
       replace!(raw_hash.symbolize_keys)
       break if valid?
     end
@@ -30,10 +34,6 @@ class Citation < Hash
 private
 
   alias_method :replace!, :replace
-
-  def parser
-    @parser ||= CRFParser.new
-  end
 
   def has_title?
     has_field?(:title) && self[:title].length < MaxSaneTitleLength
