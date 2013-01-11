@@ -47,7 +47,9 @@ describe Postprocessor do
     end
 
     def normalize(title)
-      CRFParser.new.normalize_title({ "title" => title })
+      hsh = { "title" => title }
+      CRFParser.new.normalize_title(hsh)
+      hsh["title"]
     end
 
   end

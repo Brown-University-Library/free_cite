@@ -23,16 +23,24 @@ module Postprocessor
   def normalize(key, hsh)
     hsh[key].gsub!(/^[^A-Za-z0-9]+/, '')
     hsh[key].gsub!(/[^A-Za-z0-9]+$/, '')
-    hsh[key].strip
-  end
+ end
 
   # strip leading numerals
   # if the real title is quoted inside this string, try to extract it
   def normalize_title(hsh)
     str = hsh['title'].strip
-    str.gsub!(/^[A-Z][.)]\s+/i, '') # initial single letter + punctuation and space
-    str.gsub!(/^C{0,3}(L?X{0,3}|X[LC])(V?I{0,3}|I[VX])[.)]\s+/i, '') # initial roman numerals + punctuation and space
-    str.gsub!(/^[0-9]+[.)]\s+/i, '') # initial numbers + punctuation and space
+
+    numeral_regexes = [
+      /^[0-9]+[.)](\s+|(?=["'”’´‘“`'A-Z]))/i,                                    # initial numbers + punctuation + space or a quote or a capital letter
+      /^C{0,3}(L?X{0,3}|X[LC])(V?I{0,3}|I[VX])[.)](\s+|(?=["'”’´‘“`'A-Z]))/i,    # initial roman numerals
+      /^[A-Z][.)](\s+|(?=["'”’´‘“`'A-Z]))/i                                      # initial single letter
+    ]
+
+    numeral_regexes.each do |regex|
+      if str.gsub!(regex, '')
+        break
+      end
+    end
 
     if (m = str.match /^(["'”’´‘“`'])/)
       quote_char = m[1]
@@ -40,7 +48,7 @@ module Postprocessor
 
       if str.scan(/[#{pairable}]/).length >= 2
         str.gsub!(/^#{quote_char}/, '')
-        str.gsub!(/[^#{pairable}]+$/, '')
+        str.gsub!(/[#{pairable}][^#{pairable}]+$/, '')
       end
     end
 

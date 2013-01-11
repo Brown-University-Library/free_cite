@@ -79,6 +79,11 @@ describe Citation do
       pending "would be nice to fix at least some of these"
     end
 
+    it "parses citation prefixed by number without space" do
+      hash = Citation.parse("3.“ High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa ” Philip Salmon, James Drewitt, Dean Whittaker, Anita Ziedler, Kamil Wezka, Craig Bull, Mathew Tucker, Martin Wilding, Malcon Guthrie and D Marrocchelli, Journal of Physics: Condensed Matter 24 415102 (2012)")
+      hash[:title].should == 'High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa'
+    end
+
     it "parses citation with parenthetical comment" do
       hash = Citation.parse('The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos (University of Pittsburgh Press 2005). (Awarded the Metaphysical Society of America’s 2007 John N. Findlay Book Prize.)')
       hash[:title].should == 'The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos'
