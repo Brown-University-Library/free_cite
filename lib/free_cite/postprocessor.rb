@@ -54,7 +54,7 @@ module Postprocessor
       end
     end
 
-    while (m = str.match /\S+\s+\S+.*([\n.]).*/)
+    while (m = str.match /\S+\s+\S+.*(\n|\.(?=\s)).*/)
       i = str.rindex m[1]
       str = str[0..i-1]
     end
