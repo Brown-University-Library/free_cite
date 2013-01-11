@@ -36,7 +36,7 @@ class Citation < Hash
   end
 
   def has_author?
-    has_field?(:author) || has_field?(:authors)
+    has_field?(:authors)
   end
 
   def has_year?
