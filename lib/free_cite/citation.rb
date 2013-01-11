@@ -31,10 +31,6 @@ class Citation < Hash
     has_title? && (has_author? || has_year?)
   end
 
-private
-
-  alias_method :replace!, :replace
-
   def has_title?
     has_field?(:title) && self[:title].length < MaxSaneTitleLength
   end
@@ -46,6 +42,10 @@ private
   def has_year?
     has_field?(:year)
   end
+
+private
+
+  alias_method :replace!, :replace
 
   def has_field?(field)
     self[field].present? && self[field] != self[:raw_string]
