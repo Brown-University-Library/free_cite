@@ -46,6 +46,14 @@ describe Postprocessor do
       normalize('This title comments on "some other title": a crappy work').should == 'This title comments on "some other title": a crappy work'
     end
 
+    it "chops content after a newline" do
+      normalize("A title\nActually an author or journal").should == 'A title'
+    end
+
+    it "doesn't chop content after a newline if there's not enough before the newline" do
+      normalize("A\ntitle mostly after the newline").should == "A\ntitle mostly after the newline"
+    end
+
     def normalize(title)
       hsh = { "title" => title }
       CRFParser.new.normalize_title(hsh)
