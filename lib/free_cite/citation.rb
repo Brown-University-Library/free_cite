@@ -4,36 +4,55 @@ require 'active_support/core_ext/object'
 require 'crfpp'
 require 'free_cite/crfparser'
 
-class Citation
+class Citation < Hash
+
+  MaxSaneTitleLength = 256
 
   def self.parse(str)
-    return unless str.present?
-
-    self.transformed_versions_to_try(str).each do |v|
-      hash = (self.parser.parse_string(str) || {}).symbolize_keys
-      return hash if self.valid_reference?(hash)
+    if str.present?
+      citation = Citation.new(str)
+      citation if citation.valid?
     end
-
-    nil
   end
 
-  def self.parser
+  def initialize(str)
+    transformed_versions_to_try(str).each do |v|
+      raw_hash = parser.parse_string(v) || {}
+      replace!(raw_hash.symbolize_keys)
+      break if valid?
+    end
+  end
+
+  def valid?
+    has_title? && (has_author? || has_year?)
+  end
+
+private
+
+  alias_method :replace!, :replace
+
+  def parser
     @parser ||= CRFParser.new
   end
 
-  def self.valid_reference?(hash)
-    hash && hash[:title].present? && hash[:raw_string] != hash[:title] && hash[:year].present?
+  def has_title?
+    has_field?(:title) && self[:title].length < MaxSaneTitleLength
   end
 
-  # skeleton for hack: apply some rules to cover cases which the model doesn't
-  def self.transformed_versions_to_try(str)
-    [str].compact.uniq
+  def has_author?
+    has_field?(:author) || has_field?(:authors)
   end
 
-  def self.truncate_journal(str)
-    if (m = str.match /(.+)\.(\s\w)+,\s+(vol\.?)?\s*(\d\.)+\s*\((\d\.)+\)/)
-      m[1]
-    end
+  def has_year?
+    has_field?(:year)
+  end
+
+  def has_field?(field)
+    self[field].present? && self[field] != self[:raw_string]
+  end
+
+  def transformed_versions_to_try(str)
+    [str]
   end
 
 end

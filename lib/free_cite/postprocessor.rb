@@ -19,11 +19,39 @@ module Postprocessor
 
   # default normalization function for all fields that do not have their
   # own normalization
-  # Strip any leading and/or trailing punctuation
+  # Strip any leading and/or trailing punctuation and space
   def normalize(key, hsh)
     hsh[key].gsub!(/^[^A-Za-z0-9]+/, '')
     hsh[key].gsub!(/[^A-Za-z0-9]+$/, '')
-    hsh
+    hsh[key].strip
+  end
+
+  # strip leading numerals
+  # if the real title is quoted inside this string, try to extract it
+  def normalize_title(hsh)
+    str = hsh['title'].strip
+    str.gsub!(/^[A-Z][.)]\s+/i, '') # initial single letter + punctuation and space
+    str.gsub!(/^C{0,3}(L?X{0,3}|X[LC])(V?I{0,3}|I[VX])[.)]\s+/i, '') # initial roman numerals + punctuation and space
+    str.gsub!(/^[0-9]+[.)]\s+/i, '') # initial numbers + punctuation and space
+
+    if (m = str.match /^(["'”’´‘“`'])/)
+      quote_char = m[1]
+      pairable = pairable_quote_chars(quote_char)
+
+      if str.scan(/[#{pairable}]/).length >= 2
+        str.gsub!(/^#{quote_char}/, '')
+        str.gsub!(/[^#{pairable}]+$/, '')
+      end
+    end
+
+    hsh['title'] = str
+    normalize('title',hsh)
+  end
+
+  def pairable_quote_chars(quote_char)
+    [%{"”“}, %{’'`‘´'}].each do |chars|
+      return chars if chars.include? quote_char
+    end
   end
 
   ##
