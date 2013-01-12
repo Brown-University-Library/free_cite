@@ -5,47 +5,36 @@ module TokenFeatures
   QUOTES = Regexp.escape('"\'”’´‘“`')
   SEPARATORS = Regexp.escape(".;,)")
 
-  def TokenFeatures.read_dict_file(filename)
+  def TokenFeatures.read_dict_files(dir_name)
     dict = {}
-    f = File.open(filename, 'r')
-    while l = f.gets
-      l.strip!
-      case l
-        when /^\#\# Male/
-          mode = 1
-        when /^\#\# Female/
-          mode = 2
-        when /^\#\# Last/
-          mode = 4
-        when /^\#\# Chinese/
-          mode = 4
-        when /^\#\# Months/
-          mode = 8
-        when /^\#\# Place/
-          mode = 16
-        when /^\#\# Publisher/
-          mode = 32
-        when (/^\#/)
-          # noop
-        else
-          key = l
-          val = 0
-          # entry has a probability
-          key, val = l.split(/\t/) if l =~ /\t/
+    [
+      ['male-names',1],
+      ['female-names',2],
+      ['surnames',4],
+      ['months',8],
+      ['places',16],
+      ['publishers',32],
+    ].each do |file_name, flag|
+      filename = File.join(dir_name, file_name)
+      f = File.open(filename, 'r')
 
-          # some words in dict appear in multiple places
-          unless dict[key] and dict[key] >= mode
-            dict[key] ||= 0
-            dict[key] += mode
+      while l = f.gets
+        l.strip!
+        if !l.match(/^\#/)
+          dict[l] ||= 0
+          unless dict[l] & flag > 0
+            dict[l] += flag
           end
+        end
       end
+
+      f.close
     end
-    f.close
     dict
   end
 
   DIR = File.dirname(__FILE__)
-  DICT = TokenFeatures.read_dict_file("#{DIR}/resources/parsCitDict.txt")
+  DICT = TokenFeatures.read_dict_files("#{DIR}/resources/dicts")
   DICT_FLAGS =
     {'publisherName' =>  32,
      'placeName'     =>  16,
@@ -54,7 +43,7 @@ module TokenFeatures
      'femaleName'    =>  2,
      'maleName'      =>  1}
 
-  private_class_method :read_dict_file
+  private_class_method :read_dict_files
 
   def clear
     @possible_editor = nil
