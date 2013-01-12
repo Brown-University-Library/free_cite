@@ -48,7 +48,8 @@ private
   alias_method :replace!, :replace
 
   def has_field?(field)
-    self[field].present? && self[field] != self[:raw_string] && self[field].to_s.scan(/"”“/) != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully
+    value = self[field]
+    value.present? && value != self[:raw_string] && value.to_s.scan(/["”“]/).length != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully
   end
 
   def transformed_versions_to_try(str)
