@@ -8,6 +8,8 @@ class Citation < Hash
 
   MaxSaneTitleLength = 256
 
+  attr_accessor :probabilities, :overall_probability
+
   def self.parse(str)
     if str.present?
       citation = Citation.new(str)
@@ -20,11 +22,10 @@ class Citation < Hash
   end
 
   def initialize(str)
-    transformed_versions_to_try(str).each do |v|
-      raw_hash = self.class.parser.parse_string(v) || {}
-      replace!(raw_hash.symbolize_keys)
-      break if valid?
-    end
+    raw_hash, overall_prob, tag_probs = self.class.parser.parse_string(str) || {}
+    replace!(raw_hash.symbolize_keys)
+    @probabilities = tag_probs.symbolize_keys
+    @overall_probability = overall_prob
   end
 
   def valid?
@@ -50,10 +51,6 @@ private
   def has_field?(field)
     value = self[field]
     value.present? && value != self[:raw_string] && value.to_s.scan(/["”“]/).length != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully
-  end
-
-  def transformed_versions_to_try(str)
-    [str]
   end
 
 end

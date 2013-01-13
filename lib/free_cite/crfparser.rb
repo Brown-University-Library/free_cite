@@ -40,12 +40,12 @@ class CRFParser
   end
 
   def model
-    @model ||= CRFPP::Tagger.new("-m #{MODEL_FILE}");
+    @model ||= CRFPP::Tagger.new("-m #{MODEL_FILE} -v 1");
   end
 
   def parse_string(str)
     features = str_2_features(str)
-    tags = eval_crfpp(features)
+    tags, overall_prob, tag_probs = eval_crfpp(features)
     toks = str.scan(/\S*\s*/)
     ret = {}
     tags.each_with_index {|t, i|
@@ -53,23 +53,24 @@ class CRFParser
     }
     normalize_fields(ret)
     ret['raw_string'] = str
-    ret
+    [ret, overall_prob, tag_probs]
   end
 
   def eval_crfpp(feat_seq)
     model.clear
-    #num_lines = 0
     feat_seq.each {|vec|
       line = vec.join(" ").strip
       raise unless model.add(line)
-      #num_lines += 1
     }
     raise unless model.parse
     tags = []
+    probs = {}
     feat_seq.length.times {|i|
       tags << model.y2(i)
+      probs[model.y2(i)] ||= 1
+      probs[model.y2(i)] *= model.prob(i)
     }
-    tags
+    [tags, model.prob, probs]
   end
 
   def strip_punct(str)
