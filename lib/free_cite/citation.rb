@@ -6,14 +6,11 @@ require 'free_cite/crfparser'
 
 class Citation < Hash
 
-  MaxSaneTitleLength = 256
-
   attr_accessor :probabilities, :overall_probability
 
   def self.parse(str)
     if str.present?
-      citation = Citation.new(str)
-      citation if citation.valid?
+      Citation.new(str)
     end
   end
 
@@ -23,34 +20,24 @@ class Citation < Hash
 
   def initialize(str)
     raw_hash, overall_prob, tag_probs = self.class.parser.parse_string(str) || {}
-    replace!(raw_hash.symbolize_keys)
+    self.replace(raw_hash.symbolize_keys)
     @probabilities = tag_probs.symbolize_keys
     @overall_probability = overall_prob
   end
 
-  def valid?
-    has_title? && (has_author? || has_year?)
-  end
-
-  def has_title?
-    has_field?(:title) && self[:title].length < MaxSaneTitleLength
-  end
-
-  def has_author?
-    has_field?(:authors)
-  end
-
-  def has_year?
-    has_field?(:year)
+  def method_missing(method_name)
+    if (md = method_name.to_s.match /^has_(\w+)\?$/)
+      has_field?(md[1].to_sym)
+    else
+      super
+    end
   end
 
 private
 
-  alias_method :replace!, :replace
-
   def has_field?(field)
     value = self[field]
-    value.present? && value != self[:raw_string] && value.to_s.scan(/["”“]/).length != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully
+    value.present? && value != self[:raw_string].strip && value.to_s.scan(/["”“]/).length != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully
   end
 
 end
