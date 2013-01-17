@@ -73,15 +73,15 @@ describe Citation do
     title_should_be(cite, 'Mechanisms of network collapse in GeO2 glass: high-pressure neutron diffraction with isotope substitution as arbitrator of competing models')
   end
 
+  it "parses citation prefixed by number without space" do
+    cite = Citation.parse("3.“ High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa ” Philip Salmon, James Drewitt, Dean Whittaker, Anita Ziedler, Kamil Wezka, Craig Bull, Mathew Tucker, Martin Wilding, Malcon Guthrie and D Marrocchelli, Journal of Physics: Condensed Matter 24 415102 (2012)")
+    title_should_be(cite, 'High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa')
+  end
+
   context "not yet working" do
 
     before do
-      pending "would be nice to fix at least some of these"
-    end
-
-    it "parses citation prefixed by number without space" do
-      cite = Citation.parse("3.“ High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa ” Philip Salmon, James Drewitt, Dean Whittaker, Anita Ziedler, Kamil Wezka, Craig Bull, Mathew Tucker, Martin Wilding, Malcon Guthrie and D Marrocchelli, Journal of Physics: Condensed Matter 24 415102 (2012)")
-      title_should_be(cite, 'High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa')
+      pending "would be nice to fix these"
     end
 
     it "parses citation with parenthetical comment" do
