@@ -14,14 +14,13 @@ feature_order:
  - 'capitalization'   # 11
  - 'numbers'          # 12
  - 'a_is_in_dict'     # 13
- - 'maleName'         # 14
- - 'femaleName'       # 15
- - 'lastName'         # 16
- - 'monthName'        # 17
- - 'placeName'        # 18
- - 'publisherName'    # 19
- - 'possible_editor'  # 20
- - 'location'         # 21
- - 'punct'            # 22
- - 'is_in'            # 23
+ - 'firstName'        # 14
+ - 'lastName'         # 15
+ - 'monthName'        # 16
+ - 'placeName'        # 17
+ - 'publisherName'    # 18
+ - 'possible_editor'  # 19
+ - 'location'         # 20
+ - 'punct'            # 21
+ - 'is_in'            # 22
 

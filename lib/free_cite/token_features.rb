@@ -8,8 +8,7 @@ module TokenFeatures
   def TokenFeatures.read_dict_files(dir_name)
     dict = {}
     [
-      ['male-names',1],
-      ['female-names',2],
+      ['first-names',1],
       ['surnames',4],
       ['months',8],
       ['places',16],
@@ -40,8 +39,7 @@ module TokenFeatures
      'placeName'     =>  16,
      'monthName'     =>  8,
      'lastName'      =>  4,
-     'femaleName'    =>  2,
-     'maleName'      =>  1}
+     'firstName'      =>  1}
 
   private_class_method :read_dict_files
 
@@ -193,12 +191,8 @@ module TokenFeatures
     (@dict_status & DICT_FLAGS['lastName']) > 0 ? 'lastName' : 'noLastName'
   end
 
-  def femaleName(toks, toksnp, tokslcnp, idx)
-    (@dict_status & DICT_FLAGS['femaleName']) > 0 ? 'femaleName' : 'noFemaleName'
-  end
-
-  def maleName(toks, toksnp, tokslcnp, idx)
-    (@dict_status & DICT_FLAGS['maleName']) > 0 ? 'maleName' : 'noMaleName'
+  def firstName(toks, toksnp, tokslcnp, idx)
+    (@dict_status & DICT_FLAGS['firstName']) > 0 ? 'firstName' : 'noFirstName'
   end
 
 end

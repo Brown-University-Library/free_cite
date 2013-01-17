@@ -329,10 +329,10 @@ describe TokenFeatures do
     assert(['inBook', 'notInBook'].include?(a))
   end
 
-  def tok_test_femaleName(f, toks, toksnp, tokslcnp, idx)
+  def tok_test_firstName(f, toks, toksnp, tokslcnp, idx)
     a = nil
     assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-    assert(['noFemaleName', 'femaleName'].include?(a))
+    assert(['noFirstName', 'firstName'].include?(a))
   end
 
   def tok_test_last_char(f, toks, toksnp, tokslcnp, idx)
@@ -481,12 +481,6 @@ describe TokenFeatures do
     a = nil
     assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
     assert(['possibleChapter', 'noChapter'].include?(a))
-  end
-
-  def tok_test_maleName(f, toks, toksnp, tokslcnp, idx)
-    a = nil
-    assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-    assert(['noMaleName', 'maleName'].include?(a))
   end
 
   # hacks for conversion from test unit
