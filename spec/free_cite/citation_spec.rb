@@ -65,7 +65,7 @@ describe Citation do
 
   it "parses quoted journal article title" do
     cite = Citation.parse('“Standing in Livestock’s ‘Long Shadow’: The Ethics of Eating Meat on a Small Planet,” Ethics & the Environment 16 (2011): 63-93. (pdf)')
-    title_should_be(cite, 'Livestock’s ‘Long Shadow’: The Ethics of Eating Meat on a Small Planet') # note: this ideally wouldn't lose "Standing in..." but we'll take it for now
+    title_should_be(cite, 'Standing in Livestock’s ‘Long Shadow’: The Ethics of Eating Meat on a Small Planet')
   end
 
   it "parses citation prefixed by number" do
