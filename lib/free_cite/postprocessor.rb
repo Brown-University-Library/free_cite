@@ -111,7 +111,9 @@ module Postprocessor
       auth = normalize_author_name(current_auth)
       authors << auth unless auth.strip == "-"
     end
-    hsh['authors'] = authors
+    authors == authors.reject(&:blank?).compact
+    hsh['authors'] = authors if !authors.empty?
+    normalize('author',hsh)
     hsh
   end
 
@@ -238,6 +240,9 @@ module Postprocessor
       new_order << new_toks[0]
       str = new_order.join(" ")
     end
+
+    str.gsub!(/^[^A-Za-z0-9]+/, '')
+    str.gsub!(/[^A-Za-z0-9]+$/, '')
     return str
   end
 
