@@ -27,7 +27,7 @@ module Postprocessor
 
   # strip leading numerals
   # if the real title is quoted inside this string, try to extract it
-  # if the title has at least 2 words before a newline or period, strip everything after
+  # if the title has at least 2 words before a newline or period or open parens, strip everything after
   # TODO could do better with knowledge of prepositions, names - maybe we just need a second model?
   def normalize_title(hsh)
     str = hsh['title'].strip
@@ -54,7 +54,7 @@ module Postprocessor
       end
     end
 
-    while (m = str.match /\S+\s+\S+.*(\n|\.(?=\s)).*/)
+    while (m = str.match /\S+\s+\S+.*(\n|\.(?=\s|\()).*/)
       i = str.rindex m[1]
       str = str[0..i-1]
     end
@@ -109,9 +109,8 @@ module Postprocessor
     }
     if !current_auth.empty?
       auth = normalize_author_name(current_auth)
-      authors << auth unless auth.strip == "-"
+      authors << auth.strip unless auth.strip == "-" || auth.strip.blank?
     end
-    authors == authors.reject(&:blank?).compact
     hsh['authors'] = authors if !authors.empty?
     normalize('author',hsh)
     hsh
