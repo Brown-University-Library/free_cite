@@ -8,9 +8,11 @@ class Citation < Hash
 
   attr_accessor :probabilities, :overall_probability
 
-  def self.parse(str)
+  # parse a string into a citation
+  # optionally pass the presumed author
+  def self.parse(str, author=nil)
     if str.present?
-      Citation.new(str)
+      Citation.new(str, author)
     end
   end
 
@@ -18,8 +20,8 @@ class Citation < Hash
     @parser ||= CRFParser.new
   end
 
-  def initialize(str)
-    raw_hash, overall_prob, tag_probs = self.class.parser.parse_string(str) || {}
+  def initialize(str, author=nil)
+    raw_hash, overall_prob, tag_probs = self.class.parser.parse_string(str, author) || {}
     self.replace(raw_hash.symbolize_keys)
     @probabilities = tag_probs.symbolize_keys
     @overall_probability = overall_prob

@@ -43,8 +43,8 @@ class CRFParser
     @model ||= CRFPP::Tagger.new("-m #{MODEL_FILE} -v 1");
   end
 
-  def parse_string(str)
-    features = str_2_features(str)
+  def parse_string(str, presumed_author=nil)
+    features = str_2_features(str, false, presumed_author)
     tags, overall_prob, tag_probs = eval_crfpp(features)
     toks = str.scan(/\S*\s*/)
     ret = {}
@@ -79,6 +79,11 @@ class CRFParser
     toknp
   end
 
+  def normalize_input_author(str)
+    return nil if str.blank?
+    str.split.map(&:downcase).map { |t| strip_punct(t) }
+  end
+
   def prepare_token_data(cstr, training=false)
     cstr.strip!
     # split the string on whitespace and calculate features on each token
@@ -98,9 +103,11 @@ class CRFParser
   end
 
   # calculate features on the full citation string
-  def str_2_features(cstr, training=false)
+  def str_2_features(cstr, training=false, presumed_author=nil)
     features = []
     tokens_and_tags, tokens, tokensnp, tokenslcnp = prepare_token_data(cstr, training)
+    author_names = normalize_input_author(presumed_author)
+
     toki = 0
     tag = nil
     tokens_and_tags.each_with_index {|tok, i|
@@ -123,7 +130,7 @@ class CRFParser
         raise TrainingError, "Incorrect mark-up:\n #{cstr}"
       end
       @token_features.each {|f|
-        feats[f] = self.send(f, tokens, tokensnp, tokenslcnp, toki)
+        feats[f] = self.send(f, tokens, tokensnp, tokenslcnp, toki, author_names)
       }
       toki += 1
 

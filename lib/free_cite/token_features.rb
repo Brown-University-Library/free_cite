@@ -50,7 +50,7 @@ module TokenFeatures
     @is_proceeding = nil
   end
 
-  def last_char(toks, toksnp, tokslcnp, idx)
+  def last_char(toks, toksnp, tokslcnp, idx, author_names=nil)
     case toks[idx][-1,1]
       when /[a-z]/
         'a'
@@ -63,20 +63,20 @@ module TokenFeatures
     end
   end
 
-  def first_1_char(toks, toksnp, tokslcnp, idx); toks[idx][0,1]; end
-  def first_2_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,2]; end
-  def first_3_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,3]; end
-  def first_4_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,4]; end
-  def first_5_chars(toks, toksnp, tokslcnp, idx); toks[idx][0,5]; end
+  def first_1_char(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][0,1]; end
+  def first_2_chars(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][0,2]; end
+  def first_3_chars(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][0,3]; end
+  def first_4_chars(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][0,4]; end
+  def first_5_chars(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][0,5]; end
 
-  def last_1_char(toks, toksnp, tokslcnp, idx); toks[idx][-1,1]; end
-  def last_2_chars(toks, toksnp, tokslcnp, idx); toks[idx][-2,2] || toks[idx]; end
-  def last_3_chars(toks, toksnp, tokslcnp, idx); toks[idx][-3,3] || toks[idx]; end
-  def last_4_chars(toks, toksnp, tokslcnp, idx); toks[idx][-4,4] || toks[idx]; end
+  def last_1_char(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][-1,1]; end
+  def last_2_chars(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][-2,2] || toks[idx]; end
+  def last_3_chars(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][-3,3] || toks[idx]; end
+  def last_4_chars(toks, toksnp, tokslcnp, idx, author_names=nil); toks[idx][-4,4] || toks[idx]; end
 
-  def toklcnp(toks, toksnp, tokslcnp, idx); tokslcnp[idx]; end
+  def toklcnp(toks, toksnp, tokslcnp, idx, author_names=nil); tokslcnp[idx]; end
 
-  def capitalization(toks, toksnp, tokslcnp, idx)
+  def capitalization(toks, toksnp, tokslcnp, idx, author_names=nil)
     case toksnp[idx]
       when /^[A-Z]$/
         "singleCap"
@@ -89,7 +89,7 @@ module TokenFeatures
     end
   end
 
-  def numbers(toks, toksnp, tokslcnp, idx)
+  def numbers(toks, toksnp, tokslcnp, idx, author_names=nil)
     (toks[idx]           =~ /[0-9]\-[0-9]/)          ? "possiblePage" :
       (toks[idx]         =~ /^\D*(19|20)[0-9][0-9]\D*$/)   ? "year"         :
       (toks[idx]         =~ /[0-9]\([0-9]+\)/)       ? "possibleVol"  :
@@ -102,7 +102,7 @@ module TokenFeatures
       (toksnp[idx]       =~ /[0-9]/)                 ? "hasDig"       : "nonNum"
   end
 
-  def possible_editor(toks, toksnp, tokslcnp, idx)
+  def possible_editor(toks, toksnp, tokslcnp, idx, author_names=nil)
     if @possible_editor
       @possible_editor
     else
@@ -114,7 +114,7 @@ module TokenFeatures
 
   # if there is possible editor entry and "IN" preceeded by punctuation
   # this citation may be a book chapter
-  def possible_chapter(toks, toksnp, tokslcnp, idx)
+  def possible_chapter(toks, toksnp, tokslcnp, idx, author_names=nil)
     if @possible_chapter
       @possible_chapter
     else
@@ -125,7 +125,7 @@ module TokenFeatures
     end
   end
 
-  def is_proceeding(toks, toksnp, tokslcnp, idx)
+  def is_proceeding(toks, toksnp, tokslcnp, idx, author_names=nil)
     if @is_proceeding
       @is_proceeding
     else
@@ -136,7 +136,7 @@ module TokenFeatures
     end
   end
 
-  def is_in(toks, toksnp, tokslcnp, idx)
+  def is_in(toks, toksnp, tokslcnp, idx, author_names=nil)
     ((idx > 0) and
      (idx < (toks.length - 1)) and
      (toksnp[idx+1] =~ /^[A-Z]/) and
@@ -144,7 +144,7 @@ module TokenFeatures
      (toks[idx-1] =~ /[#{SEPARATORS}#{QUOTES}]/))? "inBook" : "notInBook"
   end
 
-  def is_et_al(toks, toksnp, tokslcnp, idx)
+  def is_et_al(toks, toksnp, tokslcnp, idx, author_names=nil)
     a = false
     a = ((tokslcnp[idx-1] == 'et') and (tokslcnp[idx] == 'al')) if idx > 0
     return a if a
@@ -156,11 +156,11 @@ module TokenFeatures
     return (a ? "isEtAl" : "noEtAl")
   end
 
-  def location(toks, toksnp, tokslcnp, idx)
+  def location(toks, toksnp, tokslcnp, idx, author_names=nil)
     r = ((idx.to_f / toks.length) * 10).round
   end
 
-  def punct(toks, toksnp, tokslcnp, idx)
+  def punct(toks, toksnp, tokslcnp, idx, author_names=nil)
     (toks[idx]   =~ /^[#{QUOTES}]/)                    ? "leadQuote"   :
       (toks[idx] =~ /[#{QUOTES}][^s]?$/)               ? "endQuote"    :
       (toks[idx] =~ /\-.*\-/)                       ? "multiHyphen" :
@@ -170,28 +170,30 @@ module TokenFeatures
       (toks[idx] =~ /^[0-9]{2,5}\([0-9]{2,5}\).?$/) ? "possibleVol" : "others"
   end
 
-  def a_is_in_dict(toks, toksnp, tokslcnp, idx)
+  def a_is_in_dict(toks, toksnp, tokslcnp, idx, author_names=nil)
     ret = {}
     @dict_status = (DICT[tokslcnp[idx]] ? DICT[tokslcnp[idx]] : 0)
   end
 
-  def publisherName(toks, toksnp, tokslcnp, idx)
+  def publisherName(toks, toksnp, tokslcnp, idx, author_names=nil)
     (@dict_status & DICT_FLAGS['publisherName']) > 0 ? 'publisherName' : 'noPublisherName'
   end
 
-  def placeName(toks, toksnp, tokslcnp, idx)
+  def placeName(toks, toksnp, tokslcnp, idx, author_names=nil)
     (@dict_status & DICT_FLAGS['placeName']) > 0 ? 'placeName' : 'noPlaceName'
   end
 
-  def monthName(toks, toksnp, tokslcnp, idx)
+  def monthName(toks, toksnp, tokslcnp, idx, author_names=nil)
     (@dict_status & DICT_FLAGS['monthName']) > 0 ? 'monthName' : 'noMonthName'
   end
 
-  def lastName(toks, toksnp, tokslcnp, idx)
+  def lastName(toks, toksnp, tokslcnp, idx, author_names=nil)
+    return 'lastName' if author_names && author_names.any? { |name| tokslcnp[idx] == name }
     (@dict_status & DICT_FLAGS['lastName']) > 0 ? 'lastName' : 'noLastName'
   end
 
-  def firstName(toks, toksnp, tokslcnp, idx)
+  def firstName(toks, toksnp, tokslcnp, idx, author_names=nil)
+    return 'firstName' if author_names && author_names.first == tokslcnp[idx]
     (@dict_status & DICT_FLAGS['firstName']) > 0 ? 'firstName' : 'noFirstName'
   end
 

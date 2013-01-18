@@ -78,6 +78,16 @@ describe Citation do
     title_should_be(cite, 'High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa')
   end
 
+  it "takes advantage of name not in dict" do
+    cite_str = "John Xkcd Analyzing Phonetic Variation. Journal of Digital Scholarship\nNov. 2011"
+
+    cite_no_name = Citation.parse(cite_str)
+    title_should_be(cite_no_name, "Xkcd Analyzing Phonetic Variation")
+
+    cite_with_name = Citation.parse(cite_str, "John Xkcd")
+    title_should_be(cite_with_name, "Analyzing Phonetic Variation")
+  end
+
   context "not yet working" do
 
     before do
