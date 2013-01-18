@@ -4,9 +4,7 @@ require 'active_support/core_ext/object'
 require 'crfpp'
 require 'free_cite/crfparser'
 
-class Citation < Hash
-
-  attr_accessor :probabilities, :overall_probability
+module FreeCite
 
   # parse a string into a citation
   # optionally pass the presumed author
@@ -16,30 +14,36 @@ class Citation < Hash
     end
   end
 
-  def self.parser
-    @parser ||= CRFParser.new
-  end
+  class Citation < Hash
 
-  def initialize(str, author=nil)
-    raw_hash, overall_prob, tag_probs = self.class.parser.parse_string(str, author) || {}
-    self.replace(raw_hash.symbolize_keys)
-    @probabilities = tag_probs.symbolize_keys
-    @overall_probability = overall_prob
-  end
+    attr_accessor :probabilities, :overall_probability
 
-  def method_missing(method_name)
-    if (md = method_name.to_s.match /^has_(\w+)\?$/)
-      has_field?(md[1].to_sym)
-    else
-      super
+    def self.parser
+      @parser ||= CRFParser.new
     end
-  end
 
-private
+    def initialize(str, author=nil)
+      raw_hash, overall_prob, tag_probs = self.class.parser.parse_string(str, author) || {}
+      self.replace(raw_hash.symbolize_keys)
+      @probabilities = tag_probs.symbolize_keys
+      @overall_probability = overall_prob
+    end
 
-  def has_field?(field)
-    value = self[field]
-    value.present? && value != self[:raw_string].strip && value.to_s.scan(/["”“]/).length != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully
+    def method_missing(method_name)
+      if (md = method_name.to_s.match /^has_(\w+)\?$/)
+        has_field?(md[1].to_sym)
+      else
+        super
+      end
+    end
+
+  private
+
+    def has_field?(field)
+      value = self[field]
+      value.present? && value != self[:raw_string].strip && value.to_s.scan(/["”“]/).length != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully
+    end
+
   end
 
 end
