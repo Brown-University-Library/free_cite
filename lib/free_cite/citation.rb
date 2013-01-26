@@ -19,7 +19,7 @@ module FreeCite
     attr_accessor :probabilities, :overall_probability
 
     def self.parser
-      @parser ||= CRFParser.new
+      Thread.current[:crf_parser] ||= CRFParser.new
     end
 
     def initialize(str, author=nil)
