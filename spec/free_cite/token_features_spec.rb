@@ -1,20 +1,21 @@
 # encoding: UTF-8
 
+require 'pry'
+
 module FreeCite
 
   describe TokenFeatures do
 
     before do
-      @crfparser = CRFParser.new(false)
+      @crfparser = CRFParser.new
       @ref = " W. H. Enright.   Improving the efficiency of matrix operations in the numerical solution of stiff ordinary differential equations.   ACM Trans. Math. Softw.,   4(2),   127-136,   June 1978. "
-      @tokens_and_tags, @tokens, @tokensnp, @tokenslcnp =
-        @crfparser.prepare_token_data(@ref.strip)
+      @tokens = @crfparser.prepare_token_data(@ref.strip)
     end
 
     it 'features' do
       @crfparser.token_features.each {|f|
         @tokens.each_with_index {|tok, i|
-          self.send("tok_test_#{f}", f, @tokens, @tokensnp, @tokenslcnp, i)
+          self.send("tok_test_#{f}", f, @tokens.map(&:raw), @tokens.map(&:np), @tokens.map(&:lcnp), i)
         }
       }
     end
@@ -236,7 +237,7 @@ module FreeCite
         [['awef2009woeifj'], 'year']]
 
       pairs.each {|a, b|
-        s = [@crfparser.strip_punct(a.first)]
+        s = [@crfparser.class.strip_punct(a.first)]
         assert_equal(b, @crfparser.numbers(a, s, s, 0))
       }
     end

@@ -47,11 +47,7 @@ module FreeCite
     end
 
     def model
-      if @mode == :string
-        @model ||= CRFPP::Tagger.new("-m #{MODEL_FILE} -v 1");
-      elsif @mode == :html
-        @model ||= CRFPP::Tagger.new("-m #{HTML_MODEL_FILE} -v 1");
-      end
+      @model ||= CRFPP::Tagger.new("-m #{default_model_file} -v 1");
     end
 
     def parse_string(str, presumed_author=nil)
@@ -84,7 +80,7 @@ module FreeCite
       [tags, model.prob, probs]
     end
 
-    def strip_punct(str)
+    def self.strip_punct(str)
       toknp = str.gsub(/[^\w]/, '')
       toknp = "EMPTY" if toknp.blank?
       toknp
@@ -92,7 +88,7 @@ module FreeCite
 
     def normalize_input_author(str)
       return nil if str.blank?
-      str.split.map(&:downcase).map { |t| strip_punct(t) }
+      str.split.map(&:downcase).map { |t| self.class.strip_punct(t) }
     end
 
     def prepare_token_data(cstr, training=false)
@@ -129,7 +125,7 @@ module FreeCite
 
     def prepare_html_token_data(html)
       if html.text?
-        raw_toks = html.text.split(/[[:space:]]/)
+        raw_toks = html.text.split(/[[:space:]]+/)
         raw_toks.each_with_index.map { |t,i| Token.new(t, html, i, raw_toks.length) }
       else
         tokens = []
@@ -139,8 +135,8 @@ module FreeCite
       end
     end
 
-    def prepare_text_token_data_with_tag(text)
-      text.split(/[[:space:]]/).map { |s| Token.new(s) }
+    def prepare_text_token_data(text)
+      text.split(/[[:space:]]+/).map { |s| Token.new(s) }
     end
 
     # calculate features on the full citation string
@@ -170,8 +166,8 @@ module FreeCite
       [raw, features]
     end
 
-    def write_training_file(tagged_refs=TAGGED_REFERENCES,
-      training_data=TRAINING_DATA)
+    def write_training_file(tagged_refs=nil, training_data=TRAINING_DATA)
+      tagged_refs ||= default_tagged_references
 
       fin = File.open(tagged_refs, 'r')
       fout = File.open(training_data, 'w')
@@ -187,12 +183,9 @@ module FreeCite
       fout.close
     end
 
-    def train_html(training_data=nil)
-      train(TAGGED_HTML_REFERENCES, HTML_MODEL_FILE, TEMPLATE_FILE, training_data)
-    end
-
-    def train(tagged_refs=TAGGED_REFERENCES, model=MODEL_FILE,
-      template=TEMPLATE_FILE, training_data=nil)
+    def train(tagged_refs=nil, model=nil, template=TEMPLATE_FILE, training_data=nil)
+      tagged_refs ||= default_tagged_references
+      model ||= default_model_file
 
       if training_data.nil?
         training_data = TRAINING_DATA
@@ -200,6 +193,26 @@ module FreeCite
       end
 
       `crf_learn #{template} #{training_data} #{model}`
+    end
+
+    def default_tagged_references
+      if @mode == :string
+        TAGGED_REFERENCES
+      elsif @mode == :html
+        TAGGED_HTML_REFERENCES
+      else
+        raise "Unknown mode: #{@mode}"
+      end
+    end
+
+    def default_model_file
+      if @mode == :string
+        MODEL_FILE
+      elsif @mode == :html
+        HTML_MODEL_FILE
+      else
+        raise "Unknown mode: #{@mode}"
+      end
     end
 
   end
@@ -223,11 +236,11 @@ module FreeCite
     end
 
     def np
-      @np ||= strip_punct(@str)
+      @np ||= CRFParser.strip_punct(@str)
     end
 
     def lcnp
-      @lcnp ||= tokennp.downcase
+      @lcnp ||= np.downcase
     end
 
   end
