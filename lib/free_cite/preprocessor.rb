@@ -11,15 +11,30 @@ module FreeCite
       :NAKEDNUMDOT  => '\\d+\\.',
     }
 
+    CLEANUP_RULES = YAML.load_file "#{File.dirname(__FILE__)}/../../config/citation_cleanup_rules.yml"
 
     ##
-    # Removes lines that appear to be junk from the citation text.
+    # Removes lines that appear to be junk from the citation text,
+    # and applies cleanup regexes from the configuration file.
     ##
-    def normalizeCiteText(cite_text)
-      cite_text.split(/\n/).reject {|line|
-        line =~ /^[\s\d]*$/
-      }.join("\n")
-    end  # normalizeCiteText
+    def normalize_cite_text(cite_text)
+      cite_text.split(/\n/).reject do |line|
+        line.blank? || line =~ /^[\s\d]*$/
+      end.map do |line|
+        normalize_citation(line)
+      end.join("\n")
+    end
+
+    def normalize_citation(cite)
+      cite = cite.dup
+
+      CLEANUP_RULES['order'].each do |rule_name|
+        re = Regexp.new(CLEANUP_RULES['rules'][rule_name]['regex'], CLEANUP_RULES['rules'][rule_name]['ignore_case'])
+        cite.gsub!(re, CLEANUP_RULES['rules'][rule_name]['replacement_str'] || '')
+      end
+
+      cite
+    end
 
     ##
     # Controls the process by which citations are segmented,
@@ -27,7 +42,7 @@ module FreeCite
     # citation marker used in the reference section.  Returns
     # a reference to a list of citation objects.
     ##
-    def segmentCitations(cite_text)
+    def segment_citations(cite_text)
       marker_type = guess_marker_type(cite_text)
       unless marker_type == 'UNKNOWN'
         citations = split_unmarked_citations(cite_text)
@@ -35,7 +50,7 @@ module FreeCite
         citations = split_citations_by_marker(cite_text, marker_type)
       end
       return citations
-    end  # segmentCitations
+    end
 
     ##
     # Segments citations that have explicit markers in the
