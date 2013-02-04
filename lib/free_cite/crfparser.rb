@@ -3,6 +3,8 @@
 require 'free_cite/postprocessor'
 require 'free_cite/token_features'
 require 'tempfile'
+require 'nokogiri'
+require 'pry'
 
 module FreeCite
 
@@ -16,8 +18,10 @@ module FreeCite
 
     DIR = File.dirname(__FILE__)
     TAGGED_REFERENCES = "#{DIR}/resources/trainingdata/tagged_references.txt"
+    TAGGED_HTML_REFERENCES = "#{DIR}/resources/trainingdata/tagged_html_references.txt"
     TRAINING_DATA = "#{DIR}/resources/trainingdata/training_data.txt"
     MODEL_FILE = "#{DIR}/resources/model"
+    HTML_MODEL_FILE = "#{DIR}/resources/html_model"
     TEMPLATE_FILE = "#{DIR}/resources/parsCit.template"
 
     # Feature functions must be performed in alphabetical order, since
@@ -27,7 +31,9 @@ module FreeCite
     # You may also use this config file to specify a subset of features to use
     # Just be careful not to exclude any functions that included functions
     # depend on
-    def initialize(config_file="#{DIR}/../../config/parscit_features.yml")
+    def initialize(mode=:string, config_file="#{DIR}/../../config/parscit_features.yml")
+      @mode = mode
+
       if config_file
         f = File.open(config_file, 'r')
         hsh = YAML::load( f )
@@ -41,23 +47,27 @@ module FreeCite
     end
 
     def model
-      @model ||= CRFPP::Tagger.new("-m #{MODEL_FILE} -v 1");
+      if @mode == :string
+        @model ||= CRFPP::Tagger.new("-m #{MODEL_FILE} -v 1");
+      elsif @mode == :html
+        @model ||= CRFPP::Tagger.new("-m #{HTML_MODEL_FILE} -v 1");
+      end
     end
 
     def parse_string(str, presumed_author=nil)
-      features = str_2_features(str, false, presumed_author)
-      tags, overall_prob, tag_probs = eval_crfpp(features)
-      toks = str.scan(/\S*\s*/)
+      toks, features = str_2_features(str, false, presumed_author)
+      tags, overall_prob, tag_probs = eval_crfpp(features, model)
+
       ret = {}
-      tags.each_with_index {|t, i|
-        (ret[t] ||= '') << toks[i]
-      }
+      tags.each_with_index { |t, i| (ret[t] ||= []) << toks[i] }
+      ret.each { |k, v| ret[k] = v.join(' ') }
+
       normalize_fields(ret)
       ret['raw_string'] = str
       [ret, overall_prob, tag_probs]
     end
 
-    def eval_crfpp(feat_seq)
+    def eval_crfpp(feat_seq, model)
       model.clear
       feat_seq.each {|vec|
         line = vec.join(" ").strip
@@ -87,63 +97,77 @@ module FreeCite
 
     def prepare_token_data(cstr, training=false)
       cstr.strip!
-      # split the string on whitespace and calculate features on each token
-      tokens_and_tags = cstr.split(/\s+/)
-      tag = nil
+
+      if training
+        tags = Nokogiri::HTML.fragment(cstr).children
+        tags.inject([]) do |tokens, tag|
+          tokens += prepare_token_data_with_tag(tag.inner_html, tag.name)
+        end
+      else
+        tokens = prepare_token_data_with_tag(cstr)
+      end
+
       self.clear
 
-      # strip out any tags
-      tokens = tokens_and_tags.reject {|t| t =~ /^<[\/]{0,1}([a-z]+)>$/}
+      return tokens
+    end
 
-      # strip tokens of punctuation
-      tokensnp = tokens.map {|t| strip_punct(t) }
+    def prepare_token_data_with_tag(str, label=nil)
+      if @mode == :html
+        html = Nokogiri::HTML.fragment(str)
+        toks = prepare_html_token_data(html)
+      elsif @mode == :string
+        toks = prepare_text_token_data(str)
+      end
 
-      # downcase stripped tokens
-      tokenslcnp = tokensnp.map {|t| t == "EMPTY" ? "EMPTY" : t.downcase }
-      return [tokens_and_tags, tokens, tokensnp, tokenslcnp]
+      if label
+        toks.each { |t| t.label = label }
+      end
+
+      toks
+    end
+
+    def prepare_html_token_data(html)
+      if html.text?
+        raw_toks = html.text.split(/[[:space:]]/)
+        raw_toks.each_with_index.map { |t,i| Token.new(t, html, i, raw_toks.length) }
+      else
+        tokens = []
+        html.traverse do |node|
+          tokens += prepare_html_token_data_with_tag(node)
+        end
+      end
+    end
+
+    def prepare_text_token_data_with_tag(text)
+      text.split(/[[:space:]]/).map { |s| Token.new(s) }
     end
 
     # calculate features on the full citation string
     def str_2_features(cstr, training=false, presumed_author=nil)
       features = []
-      tokens_and_tags, tokens, tokensnp, tokenslcnp = prepare_token_data(cstr, training)
+      tokens = prepare_token_data(cstr, training)
       author_names = normalize_input_author(presumed_author)
 
-      toki = 0
-      tag = nil
-      tokens_and_tags.each_with_index {|tok, i|
-        # if this is training data, grab the mark-up tag and then skip it
-        if training
-          if tok =~ /^<([a-z]+)>$/
-            tag = $1
-            next
-          elsif tok =~ /^<\/([a-z]+)>$/
-            tok = nil
-            raise TrainingError, "Mark-up tag mismatch #{tag} != #{$1}\n#{cstr}" if $1 != tag
-            next
-          end
-        end
+      raw = tokens.map(&:raw)
+      np = tokens.map(&:np)
+      lcnp = tokens.map(&:lcnp)
+
+      tokens.each_with_index do |tok, toki|
+        raise "All tokens must be labeled" if training && tok.label.nil?
+
         feats = {}
 
-
-        # If we are training, there should always be a tag defined
-        if training && tok.nil?
-          raise TrainingError, "Incorrect mark-up:\n #{cstr}"
-        end
         @token_features.each {|f|
-          feats[f] = self.send(f, tokens, tokensnp, tokenslcnp, toki, author_names)
+          feats[f] = self.send(f, raw, np, lcnp, toki, author_names)
         }
-        toki += 1
 
-        features << [tok]
+        features << [tok.raw]
         @feature_order.each {|f| features.last << feats[f]}
-        features.last << tag if training
+        features.last << tok.tag if training
+      end
 
-        if toki >= tokens.length
-          break
-        end
-      }
-      return features
+      [raw, features]
     end
 
     def write_training_file(tagged_refs=TAGGED_REFERENCES,
@@ -153,7 +177,6 @@ module FreeCite
       fout = File.open(training_data, 'w')
       x = 0
       while l = fin.gets
-        #puts "processed a line #{x+=1}"
         data = str_2_features(l.strip, true)
         data.each {|line| fout.write("#{line.join(" ")}\n") }
         fout.write("\n")
@@ -164,6 +187,10 @@ module FreeCite
       fout.close
     end
 
+    def train_html(training_data=nil)
+      train(TAGGED_HTML_REFERENCES, HTML_MODEL_FILE, TEMPLATE_FILE, training_data)
+    end
+
     def train(tagged_refs=TAGGED_REFERENCES, model=MODEL_FILE,
       template=TEMPLATE_FILE, training_data=nil)
 
@@ -171,11 +198,38 @@ module FreeCite
         training_data = TRAINING_DATA
         write_training_file(tagged_refs, training_data)
       end
+
       `crf_learn #{template} #{training_data} #{model}`
     end
 
   end
 
   class TrainingError < Exception; end
+
+  class Token
+
+    attr_reader :node, :idx_in_node, :node_token_count
+    attr_accessor :label
+
+    def initialize(str, node=nil, idx_in_node=nil, node_token_count=nil)
+      @str = str
+      @node = node
+      @idx_in_node = idx_in_node
+      @node_token_count = node_token_count
+    end
+
+    def raw
+      @str
+    end
+
+    def np
+      @np ||= strip_punct(@str)
+    end
+
+    def lcnp
+      @lcnp ||= tokennp.downcase
+    end
+
+  end
 
 end

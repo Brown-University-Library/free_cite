@@ -4,6 +4,7 @@ PATH
     free_cite (1.0)
       activesupport
       crfpp
+      nokogiri
       openurl
 
 GEM
@@ -28,6 +29,7 @@ GEM
     marc (0.5.0)
     method_source (0.8.1)
     multi_json (1.5.0)
+    nokogiri (1.5.6)
     openurl (0.4.2)
       ensure_valid_encoding
       marc
