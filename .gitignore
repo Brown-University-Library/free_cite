@@ -1,14 +1,8 @@
-config/database.yml
-config/memcached.yml
-config/settings.rb
 log
-test/fixtures/calendars
 .DS_Store
-public/javascripts/*_12*.js
-public/stylesheets/*_12*.css
 tmp/
 *swp
-lib/resources/trainingdata/training_data.txt
+lib/free_cite/resources/trainingdata/training_data.txt
 model/test/testing_data*txt
 model/test/testing_data*txt
 model/test/training_refs*txt
