@@ -101,7 +101,7 @@ module FreeCite
       cstr.strip!
 
       if training
-        tags = Nokogiri::HTML.fragment(cstr).children
+        tags = labeled_cite_components_as_tags(cstr)
         tokens = tags.inject([]) do |tokens, tag|
           tokens += prepare_token_data_with_tag(CGI.unescapeHTML(tag.inner_html), tag.name)
         end
@@ -114,7 +114,13 @@ module FreeCite
       return tokens
     end
 
+    def labeled_cite_components_as_tags(str)
+      Nokogiri::XML.fragment("<cite>#{str}</cite>").css('cite').children.reject(&:text?)
+    end
+
     def prepare_token_data_with_tag(str, label=nil)
+      raise "Invalid label #{label} for:\n#{str}" if label.present? && !recognized_labels.include?(label)
+
       if @mode == :html
         html = Nokogiri::HTML.fragment(str)
         toks = prepare_html_token_data(html)
@@ -131,15 +137,28 @@ module FreeCite
       toks
     end
 
+    def recognized_labels
+      if @mode == :string
+        ["author", "title", "editor", "booktitle", "date", "journal", "volume", "institution", "pages", "location", "publisher", "note", "tech"]
+      elsif @mode == :html
+        ["author", "title", "editor", "booktitle", "date", "journal", "volume", "institution", "pages", "location", "publisher", "note", "workid", "link", "bullet"]
+      else
+        []
+      end
+    end
+
     def prepare_html_token_data(html)
       if html.text?
         raw_toks = html.text.split(/[[:space:]]+/)
         raw_toks.each_with_index.map { |t,i| Token.new(t, html, i, raw_toks.length) }
       else
         tokens = []
-        html.traverse do |node|
-          tokens += prepare_html_token_data_with_tag(node)
+        html.children.each do |child|
+          child.traverse do |node|
+            tokens += prepare_html_token_data(node)
+          end
         end
+        tokens
       end
     end
 

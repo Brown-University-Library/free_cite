@@ -4,6 +4,7 @@ DIR = File.dirname(__FILE__)
 ROOT_DIR = "#{DIR}/../.."
 RESOURCES_DIR = "#{ROOT_DIR}/lib/free_cite/resources"
 TAGGED_REFERENCES = "#{RESOURCES_DIR}/trainingdata/tagged_references.txt"
+TAGGED_HTML_REFERENCES = "#{RESOURCES_DIR}/trainingdata/tagged_html_references.txt"
 TRAINING_DATA = "#{DIR}/training_data.txt"
 TESTING_DATA = "#{DIR}/testing_data.txt"
 TRAINING_REFS = "#{DIR}/training_refs.txt"
@@ -11,7 +12,9 @@ TESTING_REFS = "#{DIR}/testing_refs.txt"
 MODEL_FILE = "#{DIR}/model"
 TEMPLATE_FILE = "#{RESOURCES_DIR}/parsCit.template"
 OUTPUT_FILE = "#{DIR}/output.txt"
-ANALYSIS_FILE = "#{DIR}/analysis.csv"
+HTML_OUTPUT_FILE = "#{DIR}/html-output.txt"
+ANALYSIS_FILE= "#{DIR}/analysis.csv"
+HTML_ANALYSIS_FILE = "#{DIR}/html-analysis.csv"
 REFS_PREFIX = "training_refs_"
 DATA_PREFIX = "training_data_"
 TAG = "model_test"
@@ -26,8 +29,33 @@ module FreeCite
 
   class ModelTest
 
-    def initialize
-      @crf = CRFParser.new
+    def analysis_file
+      if @mode == :html
+        HTML_ANALYSIS_FILE
+      else
+        ANALYSIS_FILE
+      end
+    end
+
+    def output_file
+      if @mode == :html
+        HTML_ANALYSIS_FILE
+      else
+        ANALYSIS_FILE
+      end
+    end
+
+    def tagged_references
+      if @mode == :html
+        TAGGED_HTML_REFERENCES
+      else
+        TAGGED_REFERENCES
+      end
+    end
+
+    def initialize(mode = :string)
+      @crf = CRFParser.new(mode)
+      @mode = mode
     end
 
     def version
@@ -68,22 +96,21 @@ module FreeCite
   #  end
 
     def run_test(commit=false, commit_message="evaluating model", tag_name='', k=10)
-
       cross_validate(k)
       accuracy = analyze(k)
       #time = benchmark
-      #`echo "Average time per parse:,#{time}\n" >> #{ANALYSIS_FILE}`
+      #`echo "Average time per parse:,#{time}\n" >> #{analysis_file}`
 
       if commit and tag_name.strip.blank?
         raise "You must supply a tag name if you want to commit and tag this test"
       end
 
       if commit
-        str = "git add #{ANALYSIS_FILE} #{OUTPUT_FILE}"
+        str = "git add #{analysis_file} #{output_file}"
         puts "Adding test files to index \n#{str}"
         `#{str}`
 
-        str = "git commit --message '#{commit_message}' #{ANALYSIS_FILE} #{OUTPUT_FILE}"
+        str = "git commit --message '#{commit_message}' #{analysis_file} #{output_file}"
         puts "Committing files to source control \n#{str}"
         `#{str}`
 
@@ -94,15 +121,14 @@ module FreeCite
     end
 
     def cleanup
-      to_remove = [TRAINING_DATA, TESTING_DATA, TRAINING_REFS, TESTING_REFS,
-        MODEL_FILE]
+      to_remove = [TRAINING_DATA, TESTING_DATA, TRAINING_REFS, TESTING_REFS, MODEL_FILE]
       `rm -f #{to_remove.join(" ")} #{DIR}/#{DATA_PREFIX}*txt #{DIR}/#{REFS_PREFIX}*txt`
     end
 
     def cross_validate(k=10)
       generate_data(k)
       # clear the output file
-      f = File.open(OUTPUT_FILE, 'w')
+      f = File.open(output_file, 'w')
       f.close
       k.times {|i|
         puts "Performing #{i+1}th iteration of #{k}-fold cross validation"
@@ -125,7 +151,7 @@ module FreeCite
       testpct = k/100.0
       lines = []
       k.times { lines << [] }
-      f = File.open(TAGGED_REFERENCES, 'r')
+      f = File.open(tagged_references, 'r')
       while line = f.gets
         lines[((rand * k) % k).floor] << line.strip
       end
@@ -146,14 +172,14 @@ module FreeCite
     end
 
     def test
-      str = "crf_test -m #{MODEL_FILE} #{TESTING_DATA} >> #{OUTPUT_FILE}"
+      str = "crf_test -m #{MODEL_FILE} #{TESTING_DATA} >> #{output_file}"
       puts str
       `#{str}`
     end
 
     def analyze(k)
       # get the size of the corpus
-      corpus_size = `wc #{TAGGED_REFERENCES}`.split.first
+      corpus_size = `wc #{tagged_references}`.split.first
 
       # go through all training/testing data to get complete list of output tags
       labels = {}
@@ -171,7 +197,7 @@ module FreeCite
       # reopen and go through the files again
       # for each reference, populate a confusion matrix hash
       references = []
-      testf = File.open(OUTPUT_FILE, 'r')
+      testf = File.open(output_file, 'r')
       ref = new_hash(labels)
       while testl = testf.gets
         if testl.strip.blank?
@@ -188,7 +214,7 @@ module FreeCite
       testf.close
 
       # print results to a file
-      f = File.open(ANALYSIS_FILE, 'w')
+      f = File.open(analysis_file, 'w')
       f.write "Results for model\n branch: #{branch}\n version: #{version}\n"
       f.write "Test run on:,#{Time.now}\n"
       f.write "K-fold x-validation:,#{k}\n"
