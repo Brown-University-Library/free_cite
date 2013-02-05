@@ -145,17 +145,13 @@ module FreeCite
       tokens = prepare_token_data(cstr, training)
       author_names = normalize_input_author(presumed_author)
 
-      raw = tokens.map(&:raw)
-      np = tokens.map(&:np)
-      lcnp = tokens.map(&:lcnp)
-
       tokens.each_with_index do |tok, toki|
         raise "All tokens must be labeled" if training && tok.label.nil?
 
         feats = {}
 
         @token_features.each {|f|
-          feats[f] = self.send(f, raw, np, lcnp, toki, author_names)
+          feats[f] = self.send(f, tokens, toki, author_names)
         }
 
         features << [tok.raw]
@@ -163,7 +159,7 @@ module FreeCite
         features.last << tok.tag if training
       end
 
-      [raw, features]
+      [tokens.map(&:raw), features]
     end
 
     def write_training_file(tagged_refs=nil, training_data=TRAINING_DATA)

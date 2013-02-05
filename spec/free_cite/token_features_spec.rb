@@ -15,7 +15,7 @@ module FreeCite
     it 'features' do
       @crfparser.token_features.each {|f|
         @tokens.each_with_index {|tok, i|
-          self.send("tok_test_#{f}", f, @tokens.map(&:raw), @tokens.map(&:np), @tokens.map(&:lcnp), i)
+          self.send("tok_test_#{f}", f, @tokens, i)
         }
       }
     end
@@ -33,7 +33,7 @@ module FreeCite
       [['1'], 0]]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.last_char(a, a, a, 0))
+        assert_equal(b, @crfparser.last_char(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -50,7 +50,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.first_1_char(a, a, a, 0))
+        assert_equal(b, @crfparser.first_1_char(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -67,7 +67,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.first_2_chars(a, a, a, 0))
+        assert_equal(b, @crfparser.first_2_chars(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -84,7 +84,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.first_3_chars(a, a, a, 0))
+        assert_equal(b, @crfparser.first_3_chars(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -102,7 +102,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.first_4_chars(a, a, a, 0))
+        assert_equal(b, @crfparser.first_4_chars(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -121,7 +121,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.first_5_chars(a, a, a, 0))
+        assert_equal(b, @crfparser.first_5_chars(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -140,7 +140,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.last_1_char(a, a, a, 0))
+        assert_equal(b, @crfparser.last_1_char(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -159,7 +159,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.last_2_chars(a, a, a, 0))
+        assert_equal(b, @crfparser.last_2_chars(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -178,7 +178,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.last_3_chars(a, a, a, 0))
+        assert_equal(b, @crfparser.last_3_chars(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -197,7 +197,7 @@ module FreeCite
       [['1'], '1']]
 
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.last_4_chars(a, a, a, 0))
+        assert_equal(b, @crfparser.last_4_chars(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -209,7 +209,7 @@ module FreeCite
       [["efficiency"], 'others'],
       [["1978"], 'others']]
       pairs.each {|a, b|
-        assert_equal(b, @crfparser.capitalization(a, a, a, 0))
+        assert_equal(b, @crfparser.capitalization(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -237,8 +237,7 @@ module FreeCite
         [['awef2009woeifj'], 'year']]
 
       pairs.each {|a, b|
-        s = [@crfparser.class.strip_punct(a.first)]
-        assert_equal(b, @crfparser.numbers(a, s, s, 0))
+        assert_equal(b, @crfparser.numbers(a.map { |s| Token.new(s) }, 0))
       }
     end
 
@@ -246,16 +245,16 @@ module FreeCite
       ee = %w(ed editor editors eds edited)
       ee.each {|e|
         @crfparser.clear
-        assert_equal("possibleEditors", @crfparser.possible_editor([e], [e], [e], 0))
+        assert_equal("possibleEditors", @crfparser.possible_editor([Token.new(e)], 0))
       }
 
-      @crfparser.possible_editor([ee], [ee], [ee], 0)
-      e = @crfparser.possible_editor(["foo"], ["foo"], ["foo"], 0)
+      @crfparser.possible_editor(ee.map { |s| Token.new(s) }, 0)
+      e = @crfparser.possible_editor([Token.new("foo")], 0)
       assert_equal("possibleEditors", e)
 
       @crfparser.clear
       ee = %w(foo bar 123SFOIEJ EDITUR)
-      assert_equal("noEditors", @crfparser.possible_editor(ee, ee, ee, 0))
+      assert_equal("noEditors", @crfparser.possible_editor(ee.map { |s| Token.new(s) }, 0))
     end
 
     it 'possible_chapter' do
@@ -272,227 +271,227 @@ module FreeCite
 
     private
 
-    def tok_test_toklcnp(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_toklcnp(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      assert_equal(tokslcnp[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      assert_equal(toks[idx].lcnp, a)
     end
 
-    def tok_test_placeName(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_placeName(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['noPlaceName', 'placeName'].include?(a))
     end
 
-    def tok_test_last_1_char(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_last_1_char(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 1
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 1
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(1, a.length)
       end
-      assert(toks[idx].end_with?(a))
+      assert(toks[idx].raw.end_with?(a))
     end
 
-    def tok_test_is_et_al(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_is_et_al(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(["isEtAl", "noEtAl"].include?(a))
     end
 
-    def tok_test_first_2_chars(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_first_2_chars(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 2
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 2
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(2, a.length)
       end
-      assert(toks[idx].start_with?(a))
+      assert(toks[idx].raw.start_with?(a))
     end
 
-    def tok_test_possible_editor(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_possible_editor(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(["possibleEditors", "noEditors"].include?(a))
     end
 
-    def tok_test_location(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_location(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert_equal(Fixnum, a.class)
       assert(a >= 0)
       assert(a <= 10)
     end
 
-    def tok_test_in_book(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_in_book(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['inBook', 'notInBook'].include?(a))
     end
 
-    def tok_test_firstName(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_firstName(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['noFirstName', 'firstName'].include?(a))
     end
 
-    def tok_test_last_char(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_last_char(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       a.should be_a String
       a.length.should == 1
-      assert(a == 'a' || a == 'A' || a == 0 || toks[idx].end_with?(a))
+      assert(a == 'a' || a == 'A' || a == 0 || toks[idx].raw.end_with?(a))
     end
 
-    def tok_test_last_4_chars(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_last_4_chars(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 4
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 4
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(4, a.length)
       end
-      assert(toks[idx].end_with?(a))
+      assert(toks[idx].raw.end_with?(a))
     end
 
-    def tok_test_publisherName(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_publisherName(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['noPublisherName', 'publisherName'].include?(a))
     end
 
-    def tok_test_first_5_chars(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_first_5_chars(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 5
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 5
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(5, a.length)
       end
-      assert(toks[idx].start_with?(a))
+      assert(toks[idx].raw.start_with?(a))
     end
 
-    def tok_test_is_in(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_is_in(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(["inBook", "notInBook"].include?(a))
     end
 
-    def tok_test_first_1_char(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_first_1_char(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 1
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 1
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(1, a.length)
       end
     end
 
-    def tok_test_numbers(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_numbers(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       b = ["year", "possiblePage", "possibleVol", "1dig", "2dig", "3dig",
         "4+dig", "ordinal", "hasDig", "nonNum"].include?(a)
       assert(b)
     end
 
-    def tok_test_lastName(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_lastName(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['noLastName', 'lastName'].include?(a))
     end
 
-    def tok_test_last_3_chars(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_last_3_chars(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 3
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 3
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(3, a.length)
       end
-      assert(toks[idx].end_with?(a))
+      assert(toks[idx].raw.end_with?(a))
     end
 
-    def tok_test_a_is_in_dict(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_a_is_in_dict(f, toks, idx)
       n = nil
-      assert_nothing_raised{n = @crfparser.send(f, toks, toksnp, tokslcnp, idx).class}
+      assert_nothing_raised{n = @crfparser.send(f, toks, idx).class}
       assert_equal(Fixnum, n)
     end
 
-    def tok_test_first_4_chars(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_first_4_chars(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 4
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 4
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(4, a.length)
       end
-      assert(toks[idx].start_with?(a))
+      assert(toks[idx].raw.start_with?(a))
     end
 
-    def tok_test_is_proceeding(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_is_proceeding(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['isProc', 'noProc'].include?(a))
     end
 
-    def tok_test_capitalization(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_capitalization(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(["singleCap", "InitCap", "AllCap", "others"].include?(a))
     end
 
-    def tok_test_monthName(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_monthName(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['noMonthName', 'monthName'].include?(a))
     end
 
-    def tok_test_last_2_chars(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_last_2_chars(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 2
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 2
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(2, a.length)
       end
-      assert(toks[idx].end_with?(a))
+      assert(toks[idx].raw.end_with?(a))
     end
 
-    def tok_test_punct(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_punct(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       b = %w(leadQuote endQuote multiHyphen contPunct stopPunct
         braces possibleVol others).include?(a)
       assert(b)
     end
 
-    def tok_test_first_3_chars(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_first_3_chars(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
-      if toks[idx].length <= 3
-        assert_equal(toks[idx], a)
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      if toks[idx].raw.length <= 3
+        assert_equal(toks[idx].raw, a)
       else
         assert_equal(3, a.length)
       end
-      assert(toks[idx].start_with?(a))
+      assert(toks[idx].raw.start_with?(a))
     end
 
-    def tok_test_possible_chapter(f, toks, toksnp, tokslcnp, idx)
+    def tok_test_possible_chapter(f, toks, idx)
       a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, toksnp, tokslcnp, idx)}
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['possibleChapter', 'noChapter'].include?(a))
     end
 
     # hacks for conversion from test unit
     def assert(a)
-      a.should be
+      a.should be_true
     end
 
     def assert_equal(a,b)
-      a.should == b
+      b.should == a
     end
 
     def assert_nothing_raised
