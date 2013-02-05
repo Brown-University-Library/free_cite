@@ -1,5 +1,6 @@
 # encoding: UTF-8
 
+require 'free_cite/preprocessor'
 require 'free_cite/postprocessor'
 require 'free_cite/token_features'
 require 'tempfile'
@@ -14,6 +15,7 @@ module FreeCite
     attr_reader :token_features
 
     include TokenFeatures
+    include Preprocessor
     include Postprocessor
 
     DIR = File.dirname(__FILE__)
@@ -51,6 +53,9 @@ module FreeCite
     end
 
     def parse_string(str, presumed_author=nil)
+      raw_string = str.dup
+      str = normalize_cite_text(str)
+
       toks, features = str_2_features(str, false, presumed_author)
       tags, overall_prob, tag_probs = eval_crfpp(features, model)
 
@@ -59,7 +64,7 @@ module FreeCite
       ret.each { |k, v| ret[k] = v.join(' ') }
 
       normalize_fields(ret)
-      ret['raw_string'] = str
+      ret['raw_string'] = raw_string
       [ret, overall_prob, tag_probs]
     end
 

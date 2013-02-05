@@ -1,6 +1,8 @@
 # Academia FreeCite
 
-Stripped-down version of [FreeCite](http://freecite.library.brown.edu/) which provides a Ruby API for citation parsing.
+Stripped-down version of [FreeCite](http://freecite.library.brown.edu/) which provides a simple Ruby API for citation parsing - UX not included.
+
+Forked from [shoe's version](https://github.com/shoe/free_cite), which is a full Rails app, although we should probably have forked from [rsinger's](https://github.com/rsinger/free_cite).
 
 ## Install required packages
 

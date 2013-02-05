@@ -1,0 +1,66 @@
+# The rules consist of two parts: the rules, which is a hash of regular expression rules and an array to declare what order the rules should be run in. 
+# The keys of each rules hash are: 
+#    regex (required): a string representation of the regular expression rule
+#    ignore_case (optional): a boolean to define whether or not the regex is case insensitive (the "i" flag)
+#    replacement_str (optional): the replacement string.  Absence of this attribute assumes "" (empty string)
+
+
+order:
+    - strip_quotes_0
+    - vol_0
+    - vol_1
+    - vol_2
+    - vol_iss_0
+    - iss_0
+    - eresource_0
+    - eresource_1
+#    - number_range_0 # not clear what this actually does
+#    - leading_source_0
+    
+rules:
+    vol_0:
+        # Description: be sure a whitespace exists between string 'vol.' and the actual volume number
+        regex: \svol\.([A-z0-9]*)
+        ignore_case: true
+        replacement_str: ' vol. \1'
+    vol_1:
+        # Description: replace 'Vol' with 'vol.'
+        regex: \sVol\W
+        replacement_str: ' vol. '
+    vol_2:
+        # Description: replace 'Volume' with 'vol.' (lowercased 'volume' seems fine)
+        regex: \sVolume\W
+        replacement_str: ' vol. '
+    year_0:
+        # Description: Years generally appear in the form (YYYY), remove any variants ((YYYY/YY), etc.)
+        regex: \s\(([0-9]{4})\/?[0-9]*\)\.?\s
+        replacement_str: ' (\1) '
+    number_range_0:
+        # Description: Ranges (generally pages) can't have spaces between the hyphen
+        regex: \s\(([0-9]{4})\/?[0-9]*\)\.?\s
+        replacement_str: ' (\1) '
+    vol_iss_0:
+        # Description: Volume and issue sometimes appear as '123, (4)' or '123 (4)': rewrite to '123:4'
+        regex: \s([0-9]{1,3}),?\s\(([0-9]+)\)
+        replacement_str: ' \1:\2'
+    iss_0:
+        # Description: 'Issue' needs to be lowercased
+        regex: \sIssue\b
+        replacement_str: ' issue'
+    eresource_0:
+        # Description: remove the junk about it being an electronic copy
+        regex: \s?\[electronic (journal|resource|version)\]
+        ignore_case: true
+    eresource_1:
+        # Description: variant cruft about it being an electronic copy
+        regex: \s?\[online\]
+        ignore_case: true
+    leading_source_0:
+        # Description: Many citations lead with the database they were found in: 'JSTOR', 'EBSCO', etc.  These need to be removed
+        regex: ^(JSTOR|Blackwell Synergy)\W*
+        ignore_case: true
+    strip_quotes_0:
+        # Remove leading and trailing quotes from citation string
+        regex: ^\s*\"(.*)\"\s*$
+        replacement_str: \1
+
