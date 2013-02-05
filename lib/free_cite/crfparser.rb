@@ -53,9 +53,9 @@ module FreeCite
       @model ||= CRFPP::Tagger.new("-m #{default_model_file} -v 1");
     end
 
-    def parse_string(str, presumed_author=nil)
+    def parse(str, presumed_author=nil)
       raw_string = str.dup
-      str = normalize_cite_text(str)
+      str = normalize_cite_text(str) if @mode == :string
 
       toks, features = str_2_features(str, false, presumed_author)
       tags, overall_prob, tag_probs = eval_crfpp(features, model)
@@ -149,17 +149,19 @@ module FreeCite
 
     def prepare_html_token_data(html)
       if html.text?
-        raw_toks = html.text.split(/[[:space:]]+/)
-        raw_toks.each_with_index.map { |t,i| Token.new(t, html, i, raw_toks.length) }
+        html_text_node_2_tokens(html)
       else
         tokens = []
-        html.children.each do |child|
-          child.traverse do |node|
-            tokens += prepare_html_token_data(node)
-          end
+        html.traverse do |node|
+          tokens += html_text_node_2_tokens(node) if node.text?
         end
         tokens
       end
+    end
+
+    def html_text_node_2_tokens(node)
+      raw_toks = node.text.split(/[[:space:]]+/)
+      raw_toks.each_with_index.map { |t,i| Token.new(t, node, i, raw_toks.length) }
     end
 
     def prepare_text_token_data(text)
@@ -170,6 +172,7 @@ module FreeCite
     def str_2_features(cstr, training=false, presumed_author=nil)
       features = []
       tokens = prepare_token_data(cstr, training)
+
       author_names = normalize_input_author(presumed_author)
 
       tokens.each_with_index do |tok, toki|
