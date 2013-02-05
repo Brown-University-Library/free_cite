@@ -5,6 +5,7 @@ require 'free_cite/postprocessor'
 require 'free_cite/token_features'
 require 'tempfile'
 require 'nokogiri'
+require 'cgi'
 require 'pry'
 
 module FreeCite
@@ -87,7 +88,7 @@ module FreeCite
 
     def self.strip_punct(str)
       toknp = str.gsub(/[^\w]/, '')
-      toknp = "EMPTY" if toknp.blank?
+      toknp = "EMPTY" if toknp.blank? # TODO Seems maybe hacky
       toknp
     end
 
@@ -101,8 +102,8 @@ module FreeCite
 
       if training
         tags = Nokogiri::HTML.fragment(cstr).children
-        tags.inject([]) do |tokens, tag|
-          tokens += prepare_token_data_with_tag(tag.inner_html, tag.name)
+        tokens = tags.inject([]) do |tokens, tag|
+          tokens += prepare_token_data_with_tag(CGI.unescapeHTML(tag.inner_html), tag.name)
         end
       else
         tokens = prepare_token_data_with_tag(cstr)
@@ -120,6 +121,8 @@ module FreeCite
       elsif @mode == :string
         toks = prepare_text_token_data(str)
       end
+
+      toks.reject! { |t| t.empty? }
 
       if label
         toks.each { |t| t.label = label }
@@ -161,7 +164,7 @@ module FreeCite
 
         features << [tok.raw]
         @feature_order.each {|f| features.last << feats[f]}
-        features.last << tok.tag if training
+        features.last << tok.label if training
       end
 
       [tokens.map(&:raw), features]
@@ -174,7 +177,7 @@ module FreeCite
       fout = File.open(training_data, 'w')
       x = 0
       while l = fin.gets
-        data = str_2_features(l.strip, true)
+        _, data = str_2_features(l.strip, true)
         data.each {|line| fout.write("#{line.join(" ")}\n") }
         fout.write("\n")
       end
@@ -241,7 +244,11 @@ module FreeCite
     end
 
     def lcnp
-      @lcnp ||= np.downcase
+      @lcnp ||= np == "EMPTY" ? np : np.downcase
+    end
+
+    def empty?
+      raw.strip.blank?
     end
 
   end

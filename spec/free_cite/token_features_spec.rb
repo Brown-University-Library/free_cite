@@ -269,6 +269,16 @@ module FreeCite
       'Mulcahy LR, and Nillni EA. 2007 . Invited Review. The role of prohormone processing in the physiology of energy balance. Frontiers in Bioscience.']
     end
 
+    it 'in book' do
+      book_tokens = 'end. In "Title'.split.map { |s| Token.new(s) }
+
+      @crfparser.is_in(book_tokens, 1).should == 'inBook'
+      @crfparser.is_in(book_tokens, 0).should == 'notInBook'
+      @crfparser.is_in(book_tokens, 2).should == 'notInBook'
+
+      @crfparser.is_in(['a','b','c'].map { |s| Token.new(s) }, 1).should == 'notInBook'
+    end
+
     private
 
     def tok_test_toklcnp(f, toks, idx)

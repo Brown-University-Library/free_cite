@@ -2355,7 +2355,7 @@ E. . E E. E. E. . E. E. E. e singleCap nonNum 32 noFirstName noLastName noMonthN
 Conry, , C Co Con Conr , y, ry, nry, conry InitCap nonNum 4 noFirstName lastName noMonthName noPlaceName noPublisherName noEditors 1 contPunct notInBook author
 K. . K K. K. K. . K. K. K. k singleCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 1 stopPunct notInBook author
 Kuwabara, , K Ku Kuw Kuwa , a, ra, ara, kuwabara InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 1 contPunct notInBook author
-V. . V V. V. V. . V. V. V. v singleCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 1 stopPunct notInBook author
+V. . V V. V. V. . V. V. V. v singleCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 2 stopPunct notInBook author
 R. . R R. R. R. . R. R. R. r singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 2 stopPunct notInBook author
 Lesser a L Le Les Less r er ser sser lesser InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 2 others notInBook author
 and a a an and and d nd and and and others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 2 others notInBook author
@@ -2365,25 +2365,24 @@ Meyer. . M Me Mey Meye . r. er. yer. meyer InitCap nonNum 5 firstName lastName n
 (1991) ) ( (1 (19 (199 ) 1) 91) 991) 1991 others year 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 4 braces notInBook date
 Multistage a M Mu Mul Mult e ge age tage multistage InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 4 others notInBook title
 Negotiation a N Ne Neg Nego n on ion tion negotiation InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 4 others notInBook title
-for a f fo for for r or for for for others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 4 others notInBook title
+for a f fo for for r or for for for others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 5 others notInBook title
 Distributed a D Di Dis Dist d ed ted uted distributed InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 5 others notInBook title
 Satisfaction, , S Sa Sat Sati , n, on, ion, satisfaction InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 5 contPunct notInBook title
 IEEE A I IE IEE IEEE E EE EEE IEEE ieee AllCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 5 others notInBook journal
 Transactions a T Tr Tra Tran s ns ons ions transactions InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 6 others notInBook journal
 on a o on on on n on on on on others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 6 others notInBook journal
 Systems, , S Sy Sys Syst , s, ms, ems, systems InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 6 contPunct notInBook journal
-Man, , M Ma Man Man, , n, an, Man, man InitCap nonNum 20 noFirstName lastName noMonthName placeName noPublisherName noEditors 6 contPunct notInBook journal
+Man, , M Ma Man Man, , n, an, Man, man InitCap nonNum 20 noFirstName lastName noMonthName placeName noPublisherName noEditors 7 contPunct notInBook journal
 and a a an and and d nd and and and others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 7 others notInBook journal
 Cybernetics, , C Cy Cyb Cybe , s, cs, ics, cybernetics InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 7 contPunct notInBook journal
-Special a S Sp Spe Spec l al ial cial special InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 7 others notInBook journal
+Special a S Sp Spe Spec l al ial cial special InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook journal
 Issue a I Is Iss Issu e ue sue ssue issue InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook journal
 on a o on on on n on on on on others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook journal
 Distributed a D Di Dis Dist d ed ted uted distributed InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook journal
 Artificial a A Ar Art Arti l al ial cial artificial InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook journal
 Intelligence, , I In Int Inte , e, ce, nce, intelligence InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 contPunct notInBook journal
 21(6), , 2 21 21( 21(6 , ), 6), (6), 216 others possibleVol 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 contPunct notInBook volume
-1462-1477 0 1 14 146 1462 7 77 477 1477 14621477 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook pages
-</pages>. . < </ </p </pa . >. s>. es>. pages others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 10 stopPunct notInBook pages
+1462-1477 0 1 14 146 1462 7 77 477 1477 14621477 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 10 others notInBook pages
 
 Chernoff, , C Ch Che Cher , f, ff, off, chernoff InitCap nonNum 4 noFirstName lastName noMonthName noPlaceName noPublisherName noEditors 0 contPunct notInBook author
 H. . H H. H. H. . H. H. H. h singleCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 0 stopPunct notInBook author
@@ -3231,18 +3230,17 @@ Press. . P Pr Pre Pres . s. ss. ess. press InitCap nonNum 32 noFirstName noLastN
 
 Poole, , P Po Poo Pool , e, le, ole, poole InitCap nonNum 20 noFirstName lastName noMonthName placeName noPublisherName noEditors 0 contPunct notInBook author
 David a D Da Dav Davi d id vid avid david InitCap nonNum 21 firstName lastName noMonthName placeName noPublisherName noEditors 1 others notInBook author
-(1988). . ( (1 (19 (198 . ). 8). 88). 1988 others year 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 1 stopPunct notInBook date
+(1988). . ( (1 (19 (198 . ). 8). 88). 1988 others year 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 2 stopPunct notInBook date
 A A A A A A A A A A a singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 2 others notInBook title
 logical a l lo log logi l al cal ical logical others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 3 others notInBook title
 framework a f fr fra fram k rk ork work framework others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 4 others notInBook title
-for a f fo for for r or for for for others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 4 others notInBook title
+for a f fo for for r or for for for others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 5 others notInBook title
 default a d de def defa t lt ult ault default others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 5 others notInBook title
 reasoning. . r re rea reas . g. ng. ing. reasoning others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 6 stopPunct notInBook title
-Artificial a A Ar Art Arti l al ial cial artificial InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 6 others notInBook journal
-Intelligence, , I In Int Inte , e, ce, nce, intelligence InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 7 contPunct notInBook journal
+Artificial a A Ar Art Arti l al ial cial artificial InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 7 others notInBook journal
+Intelligence, , I In Int Inte , e, ce, nce, intelligence InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 contPunct notInBook journal
 36(1), , 3 36 36( 36(1 , ), 1), (1), 361 others possibleVol 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 contPunct notInBook volume
 27-47 0 2 27 27- 27-4 7 47 -47 7-47 2747 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook pages
-</pages>. . < </ </p </pa . >. s>. es>. pages others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 stopPunct notInBook pages
 
 S. . S S. S. S. . S. S. S. s singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 0 stopPunct notInBook author
 J. . J J. J. J. . J. J. J. j singleCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 0 stopPunct notInBook author
@@ -5178,15 +5176,14 @@ WordNet: : W Wo Wor Word : t: et: Net: wordnet InitCap nonNum 0 noFirstName noLa
 A A A A A A A A A A a singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 3 others notInBook title
 lexical a l le lex lexi l al cal ical lexical others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 3 others notInBook title
 database a d da dat data e se ase base database others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 4 others notInBook title
-for a f fo for for r or for for for others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 4 others notInBook title
+for a f fo for for r or for for for others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 5 others notInBook title
 English. . E En Eng Engl . h. sh. ish. english InitCap nonNum 37 firstName lastName noMonthName noPlaceName publisherName noEditors 5 stopPunct notInBook title
 Communications a C Co Com Comm s ns ons ions communications InitCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 6 others notInBook journal
-of a o of of of f of of of of others nonNum 48 noFirstName noLastName noMonthName placeName publisherName noEditors 6 others notInBook journal
+of a o of of of f of of of of others nonNum 48 noFirstName noLastName noMonthName placeName publisherName noEditors 7 others notInBook journal
 the a t th the the e he the the the others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 7 others notInBook journal
 ACM A A AC ACM ACM M CM ACM ACM acm AllCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook journal
-38 0 3 38 38 38 8 38 38 38 38 others 2dig 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook volume
+38 0 3 38 38 38 8 38 38 38 38 others 2dig 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook volume
 39-41 0 3 39 39- 39-4 1 41 -41 9-41 3941 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook pages
-</pages>. . < </ </p </pa . >. s>. es>. pages others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 stopPunct notInBook pages
 
 A. . A A. A. A. . A. A. A. a singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 0 stopPunct notInBook author
 Louri a L Lo Lou Lour i ri uri ouri louri InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 0 others notInBook author
@@ -6812,26 +6809,25 @@ pp. . p pp pp. pp. . p. pp. pp. pp others nonNum 0 noFirstName noLastName noMont
 388-395. . 3 38 388 388- . 5. 95. 395. 388395 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 10 stopPunct notInBook pages
 
 A. . A A. A. A. . A. A. A. a singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 0 stopPunct notInBook author
-Demers, , D De Dem Deme , s, rs, ers, demers InitCap nonNum 4 noFirstName lastName noMonthName noPlaceName noPublisherName noEditors 0 contPunct notInBook author
+Demers, , D De Dem Deme , s, rs, ers, demers InitCap nonNum 4 noFirstName lastName noMonthName noPlaceName noPublisherName noEditors 1 contPunct notInBook author
 S. . S S. S. S. . S. S. S. s singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 1 stopPunct notInBook author
-Keshav, , K Ke Kes Kesh , v, av, hav, keshav InitCap nonNum 5 firstName lastName noMonthName noPlaceName noPublisherName noEditors 1 contPunct notInBook author
+Keshav, , K Ke Kes Kesh , v, av, hav, keshav InitCap nonNum 5 firstName lastName noMonthName noPlaceName noPublisherName noEditors 2 contPunct notInBook author
 and a a an and and d nd and and and others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 2 others notInBook author
-S. . S S. S. S. . S. S. S. s singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 2 stopPunct notInBook author
+S. . S S. S. S. . S. S. S. s singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 3 stopPunct notInBook author
 Shenker. . S Sh She Shen . r. er. ker. shenker InitCap nonNum 4 noFirstName lastName noMonthName noPlaceName noPublisherName noEditors 3 stopPunct notInBook author
-Analysis a A An Ana Anal s is sis ysis analysis InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 3 others notInBook title
+Analysis a A An Ana Anal s is sis ysis analysis InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 4 others notInBook title
 and a a an and and d nd and and and others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 4 others notInBook title
-simulation a s si sim simu n on ion tion simulation others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 4 others notInBook title
+simulation a s si sim simu n on ion tion simulation others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 5 others notInBook title
 of a o of of of f of of of of others nonNum 48 noFirstName noLastName noMonthName placeName publisherName noEditors 5 others notInBook title
-a a a a a a a a a a a others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 5 others notInBook title
+a a a a a a a a a a a others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 6 others notInBook title
 fair a f fa fai fair r ir air fair fair others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 6 others notInBook title
-queueing a q qu que queu g ng ing eing queueing others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 6 others notInBook title
+queueing a q qu que queu g ng ing eing queueing others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 7 others notInBook title
 algorithm. . a al alg algo . m. hm. thm. algorithm others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 7 stopPunct notInBook title
-Internetworking:Research a I In Int Inte h ch rch arch internetworkingresearch InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 7 others notInBook journal
+Internetworking:Research a I In Int Inte h ch rch arch internetworkingresearch InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook journal
 and a a an and and d nd and and and others nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 8 others notInBook journal
-Experience, , E Ex Exp Expe , e, ce, nce, experience InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 contPunct notInBook journal
+Experience, , E Ex Exp Expe , e, ce, nce, experience InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 contPunct notInBook journal
 1 0 1 1 1 1 1 1 1 1 1 others 1dig 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook volume
-3-26 0 3 3- 3-2 3-26 6 26 -26 3-26 326 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook pages
-</pages>. . < </ </p </pa . >. s>. es>. pages others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 10 stopPunct notInBook pages
+3-26 0 3 3- 3-2 3-26 6 26 -26 3-26 326 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 10 others notInBook pages
 
 Fikes, , F Fi Fik Fike , s, es, kes, fikes InitCap nonNum 4 noFirstName lastName noMonthName noPlaceName noPublisherName noEditors 0 contPunct notInBook author
 R. . R R. R. R. . R. R. R. r singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 0 stopPunct notInBook author
@@ -10824,7 +10820,6 @@ Computational a C Co Com Comp l al nal onal computational InitCap nonNum 0 noFir
 Linguistics a L Li Lin Ling s cs ics tics linguistics InitCap nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 8 others notInBook journal
 12(3) ) 1 12 12( 12(3 ) 3) (3) 2(3) 123 others possibleVol 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook volume
 175-204 0 1 17 175 175- 4 04 204 -204 175204 others possiblePage 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 9 others notInBook pages
-</pages>. . < </ </p </pa . >. s>. es>. pages others nonNum 0 noFirstName noLastName noMonthName noPlaceName noPublisherName noEditors 10 stopPunct notInBook pages
 
 Wilke, , W Wi Wil Wilk , e, ke, lke, wilke InitCap nonNum 4 noFirstName lastName noMonthName noPlaceName noPublisherName noEditors 0 contPunct notInBook author
 W. . W W. W. W. . W. W. W. w singleCap nonNum 32 noFirstName noLastName noMonthName noPlaceName publisherName noEditors 1 stopPunct notInBook author

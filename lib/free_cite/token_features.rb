@@ -141,9 +141,9 @@ module FreeCite
     def is_in(toks, idx, author_names=nil)
       ((idx > 0) and
       (idx < (toks.length - 1)) and
-      (toks[idx].np[idx+1] =~ /^[A-Z]/) and
+      (toks[idx+1].np =~ /^[A-Z]/) and
       (toks[idx].lcnp == 'in') and
-      (toks[idx-1] =~ /[#{SEPARATORS}#{QUOTES}]/))? "inBook" : "notInBook"
+      (toks[idx-1].raw =~ /[#{SEPARATORS}#{QUOTES}]/))? "inBook" : "notInBook"
     end
 
     def is_et_al(toks, idx, author_names=nil)
