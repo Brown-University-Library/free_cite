@@ -203,9 +203,9 @@ module FreeCite
       'div'=>'div',
       'p'=>'p',
       'ul'=>'div', # lump with div?
-      'li'=>'li', # lump with div?
+      'li'=>'li',
       'tr'=>'div', # lump with div?
-      'td'=>'td', # lump with div?
+      'td'=>'td',
       'span'=>'span',
       'font'=>'span',
       'em'=>'em',
@@ -220,7 +220,7 @@ module FreeCite
       'h5'=>'h',
       'h6'=>'h',
       'a'=>'a',
-      '#document-fragment'=>'unknown' # the parent tag wasn't captured in the fragment we're parsing
+      '#document-fragment'=>'unknown' # the actual tag wasn't captured in the fragment we're parsing
     }
 
     def tag_name(toks, idx, author_names=nil)
@@ -228,9 +228,23 @@ module FreeCite
       NODE_TYPES_BY_NAME[name.downcase] || 'other'
     end
 
+#    def tag_parent_name(toks, idx, author_names=nil)
+#      tag = toks[idx].node.parent
+#      if tag.parent
+#        name = tag.parent.name
+#        NODE_TYPES_BY_NAME[name.downcase] || 'other'
+#      else
+#        'unknown' # assume there is a parent, we just didn't capture it in the fragment
+#      end
+#    end
+
     def idx_in_node(toks, idx, author_names=nil)
       toks[idx].idx_in_node
     end
+
+#    def end_of_node(toks, idx, author_names=nil)
+#      toks[idx].idx_in_node == toks[idx].node_token_count-1
+#    end
 
   end
 
