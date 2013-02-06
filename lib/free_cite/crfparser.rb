@@ -215,7 +215,7 @@ module FreeCite
         write_training_file(tagged_refs, training_data)
       end
 
-      `crf_learn #{template} #{training_data} #{model}`
+      `crf_learn #{template} #{training_data} #{model} -f10 1>&2`
     end
 
     def default_tagged_references

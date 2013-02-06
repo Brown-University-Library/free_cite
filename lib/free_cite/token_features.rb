@@ -202,8 +202,9 @@ module FreeCite
     NODE_TYPES_BY_NAME = {
       'div'=>'div',
       'p'=>'p',
-      #'ul'=>'ul', # lump with div?
+      'ul'=>'div', # lump with div?
       'li'=>'li', # lump with div?
+      'tr'=>'div', # lump with div?
       'td'=>'td', # lump with div?
       'span'=>'span',
       'font'=>'span',
@@ -225,6 +226,10 @@ module FreeCite
     def tag_name(toks, idx, author_names=nil)
       name = toks[idx].node.parent.name # node is always a text node; the informative one is the parent
       NODE_TYPES_BY_NAME[name.downcase] || 'other'
+    end
+
+    def idx_in_node(toks, idx, author_names=nil)
+      toks[idx].idx_in_node
     end
 
   end
