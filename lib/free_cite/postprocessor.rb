@@ -9,12 +9,12 @@ module FreeCite
       citation_hsh
     end
 
-    def method_missing(m, args)
+    def method_missing(m, *args, &block)
       # Call normalize on any fields that don't have their own normalization
       # method defined
       if m.to_s =~ /^normalize/
         m.to_s =~ /normalize_(.*)$/
-        normalize($1, args)
+        normalize($1, *args)
       else super
       end
     end

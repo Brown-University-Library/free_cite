@@ -1,26 +1,53 @@
 # Specify feature print-order here, and refer to the associated numbers
 # when writing the template file
-feature_order:
- - 'last_char'        # 1
- - 'first_1_char'     # 2
- - 'first_2_chars'    # 3
- - 'first_3_chars'    # 4
- - 'first_4_chars'    # 5
- - 'last_1_char'      # 6
- - 'last_2_chars'     # 7
- - 'last_3_chars'     # 8
- - 'last_4_chars'     # 9
- - 'toklcnp'          # 10
- - 'capitalization'   # 11
- - 'numbers'          # 12
- - 'a_is_in_dict'     # 13
- - 'firstName'        # 14
- - 'lastName'         # 15
- - 'monthName'        # 16
- - 'placeName'        # 17
- - 'publisherName'    # 18
- - 'possible_editor'  # 19
- - 'location'         # 20
- - 'punct'            # 21
- - 'is_in'            # 22
+string:
+  feature_order:
+    - 'last_char'        # 1
+    - 'first_1_char'     # 2
+    - 'first_2_chars'    # 3
+    - 'first_3_chars'    # 4
+    - 'first_4_chars'    # 5
+    - 'last_1_char'      # 6
+    - 'last_2_chars'     # 7
+    - 'last_3_chars'     # 8
+    - 'last_4_chars'     # 9
+    - 'toklcnp'          # 10
+    - 'capitalization'   # 11
+    - 'numbers'          # 12
+    - 'a_is_in_dict'     # 13
+    - 'firstName'        # 14
+    - 'lastName'         # 15
+    - 'monthName'        # 16
+    - 'placeName'        # 17
+    - 'publisherName'    # 18
+    - 'possible_editor'  # 19
+    - 'location'         # 20
+    - 'punct'            # 21
+    - 'is_in'            # 22
+
+html:
+  feature_order:
+    - 'last_char'        # 1
+    - 'first_1_char'     # 2
+    - 'first_2_chars'    # 3
+    - 'first_3_chars'    # 4
+    - 'first_4_chars'    # 5
+    - 'last_1_char'      # 6
+    - 'last_2_chars'     # 7
+    - 'last_3_chars'     # 8
+    - 'last_4_chars'     # 9
+    - 'toklcnp'          # 10
+    - 'capitalization'   # 11
+    - 'numbers'          # 12
+    - 'a_is_in_dict'     # 13
+    - 'firstName'        # 14
+    - 'lastName'         # 15
+    - 'monthName'        # 16
+    - 'placeName'        # 17
+    - 'publisherName'    # 18
+    - 'possible_editor'  # 19
+    - 'location'         # 20
+    - 'punct'            # 21
+    - 'is_in'            # 22
+    - 'tag_name'         # 23
 

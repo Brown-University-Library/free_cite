@@ -11,6 +11,7 @@ TRAINING_REFS = "#{DIR}/training_refs.txt"
 TESTING_REFS = "#{DIR}/testing_refs.txt"
 MODEL_FILE = "#{DIR}/model"
 TEMPLATE_FILE = "#{RESOURCES_DIR}/parsCit.template"
+HTML_TEMPLATE_FILE = "#{RESOURCES_DIR}/html.template"
 OUTPUT_FILE = "#{DIR}/output.txt"
 HTML_OUTPUT_FILE = "#{DIR}/html-output.txt"
 ANALYSIS_FILE= "#{DIR}/analysis.csv"
@@ -39,9 +40,17 @@ module FreeCite
 
     def output_file
       if @mode == :html
-        HTML_ANALYSIS_FILE
+        HTML_OUTPUT_FILE
       else
-        ANALYSIS_FILE
+        OUTPUT_FILE
+      end
+    end
+
+    def template_file
+      if @mode == :html
+        HTML_TEMPLATE_FILE
+      else
+        TEMPLATE_FILE
       end
     end
 
@@ -168,7 +177,7 @@ module FreeCite
     end
 
     def train
-      @crf.train(TRAINING_REFS, MODEL_FILE, TEMPLATE_FILE, TRAINING_DATA)
+      @crf.train(TRAINING_REFS, MODEL_FILE, template_file, TRAINING_DATA)
     end
 
     def test

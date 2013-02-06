@@ -26,27 +26,19 @@ module FreeCite
     MODEL_FILE = "#{DIR}/resources/model"
     HTML_MODEL_FILE = "#{DIR}/resources/html_model"
     TEMPLATE_FILE = "#{DIR}/resources/parsCit.template"
+    HTML_TEMPLATE_FILE = "#{DIR}/resources/html.template"
+    CONFIG_FILE = "#{DIR}/../../config/parscit_features.yml"
 
     # Feature functions must be performed in alphabetical order, since
     # later functions may depend on earlier ones.
-    # If you want to specify a specific output order, do so in a yaml file in
-    # config. See ../../config/parscit_features.yml as an example
-    # You may also use this config file to specify a subset of features to use
-    # Just be careful not to exclude any functions that included functions
-    # depend on
-    def initialize(mode=:string, config_file="#{DIR}/../../config/parscit_features.yml")
+    # TODO This seems pretty confusing and dependent on the current features.
+    def initialize(mode=:string)
       @mode = mode
 
-      if config_file
-        f = File.open(config_file, 'r')
-        hsh = YAML::load( f )
-        @feature_order = hsh["feature_order"].map(&:to_sym)
-        @token_features = hsh["feature_order"].sort.map(&:to_sym)
-      else
-        @token_features = (TokenFeatures.instance_methods).sort.map(&:to_sym)
-        @token_features.delete :clear
-        @feature_order = @token_features
-      end
+      f = File.open(CONFIG_FILE, 'r')
+      hsh = YAML::load(f)[mode.to_s]
+      @feature_order = hsh["feature_order"].map(&:to_sym)
+      @token_features = hsh["feature_order"].sort.map(&:to_sym)
     end
 
     def model
@@ -98,15 +90,30 @@ module FreeCite
     end
 
     def prepare_token_data(cstr, training=false)
-      cstr.strip!
+      if training
+        tags = labeled_cite_components_as_tags(cstr.strip)
+
+        labels, cstr = [], ''
+        tags.each do |tag|
+          raw = CGI.unescapeHTML(tag.inner_html)
+
+          label = tag.name
+          raise "Invalid label #{label} for:\n#{str}" if label.present? && !recognized_labels.include?(label)
+
+          token_count = str_2_tokens(raw).length
+          token_count.times { labels << label }
+
+          cstr += "\n#{raw}"
+        end
+      end
+
+      tokens = str_2_tokens(cstr.strip)
 
       if training
-        tags = labeled_cite_components_as_tags(cstr)
-        tokens = tags.inject([]) do |tokens, tag|
-          tokens += prepare_token_data_with_tag(CGI.unescapeHTML(tag.inner_html), tag.name)
+        raise "#{labels.length} labels #{labels} do not match #{tokens.length} tokens #{tokens}" unless labels.length == tokens.length
+        tokens.each_with_index do |tok, i|
+          tok.label = labels[i]
         end
-      else
-        tokens = prepare_token_data_with_tag(cstr)
       end
 
       self.clear
@@ -118,23 +125,14 @@ module FreeCite
       Nokogiri::XML.fragment("<cite>#{str}</cite>").css('cite').children.reject(&:text?)
     end
 
-    def prepare_token_data_with_tag(str, label=nil)
-      raise "Invalid label #{label} for:\n#{str}" if label.present? && !recognized_labels.include?(label)
-
+    def str_2_tokens(str)
       if @mode == :html
-        html = Nokogiri::HTML.fragment(str)
-        toks = prepare_html_token_data(html)
+        toks = html_str_2_tokens(str)
       elsif @mode == :string
-        toks = prepare_text_token_data(str)
+        toks = text_str_2_tokens(str)
       end
 
-      toks.reject! { |t| t.empty? }
-
-      if label
-        toks.each { |t| t.label = label }
-      end
-
-      toks
+      toks.reject { |t| t.empty? }
     end
 
     def recognized_labels
@@ -147,16 +145,14 @@ module FreeCite
       end
     end
 
-    def prepare_html_token_data(html)
-      if html.text?
-        html_text_node_2_tokens(html)
-      else
-        tokens = []
-        html.traverse do |node|
-          tokens += html_text_node_2_tokens(node) if node.text?
-        end
-        tokens
+    def html_str_2_tokens(str)
+      html = Nokogiri::HTML.fragment(str.gsub('>', '> ')) # gsub to ensure strings in separate tags are always separate tokens even if HTML is bad
+
+      tokens = []
+      html.traverse do |node|
+        tokens += html_text_node_2_tokens(node) if node.text?
       end
+      tokens
     end
 
     def html_text_node_2_tokens(node)
@@ -164,7 +160,7 @@ module FreeCite
       raw_toks.each_with_index.map { |t,i| Token.new(t, node, i, raw_toks.length) }
     end
 
-    def prepare_text_token_data(text)
+    def text_str_2_tokens(text)
       text.split(/[[:space:]]+/).map { |s| Token.new(s) }
     end
 
@@ -209,9 +205,10 @@ module FreeCite
       fout.close
     end
 
-    def train(tagged_refs=nil, model=nil, template=TEMPLATE_FILE, training_data=nil)
+    def train(tagged_refs=nil, model=nil, template=nil, training_data=nil)
       tagged_refs ||= default_tagged_references
       model ||= default_model_file
+      template ||= default_template_file
 
       if training_data.nil?
         training_data = TRAINING_DATA
@@ -236,6 +233,16 @@ module FreeCite
         MODEL_FILE
       elsif @mode == :html
         HTML_MODEL_FILE
+      else
+        raise "Unknown mode: #{@mode}"
+      end
+    end
+
+    def default_template_file
+      if @mode == :string
+        TEMPLATE_FILE
+      elsif @mode == :html
+        HTML_TEMPLATE_FILE
       else
         raise "Unknown mode: #{@mode}"
       end
@@ -273,6 +280,9 @@ module FreeCite
       raw.strip.blank?
     end
 
+    def to_s
+      raw
+    end
   end
 
 end

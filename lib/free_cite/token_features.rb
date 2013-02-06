@@ -199,6 +199,34 @@ module FreeCite
       (@dict_status & DICT_FLAGS['firstName']) > 0 ? 'firstName' : 'noFirstName'
     end
 
+    NODE_TYPES_BY_NAME = {
+      'div'=>'div',
+      'p'=>'p',
+      #'ul'=>'ul', # lump with div?
+      'li'=>'li', # lump with div?
+      'td'=>'td', # lump with div?
+      'span'=>'span',
+      'font'=>'span',
+      'em'=>'em',
+      'i'=>'em',
+      'strong'=>'strong',
+      'b'=>'strong',
+      'u'=>'u',
+      'h1'=>'h',
+      'h2'=>'h',
+      'h3'=>'h',
+      'h4'=>'h',
+      'h5'=>'h',
+      'h6'=>'h',
+      'a'=>'a',
+      '#document-fragment'=>'unknown' # the parent tag wasn't captured in the fragment we're parsing
+    }
+
+    def tag_name(toks, idx, author_names=nil)
+      name = toks[idx].node.parent.name # node is always a text node; the informative one is the parent
+      NODE_TYPES_BY_NAME[name.downcase] || 'other'
+    end
+
   end
 
 end
