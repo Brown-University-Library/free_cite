@@ -156,7 +156,10 @@ module FreeCite
     end
 
     def html_text_node_2_tokens(node)
-      raw_toks = node.text.split(/[[:space:]]+/)
+      text = CGI.unescapeHTML(node.text)
+      return [] if text.blank?
+
+      raw_toks = text.split(/[[:space:]]+/)
       raw_toks.each_with_index.map { |t,i| Token.new(t, node, i, raw_toks.length) }
     end
 
