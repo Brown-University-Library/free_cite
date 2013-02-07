@@ -1,7 +1,5 @@
 # encoding: UTF-8
 
-require 'pry'
-
 describe FreeCite do
 
   context "parse string" do

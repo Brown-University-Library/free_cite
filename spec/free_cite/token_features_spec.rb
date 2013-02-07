@@ -1,7 +1,5 @@
 # encoding: UTF-8
 
-require 'pry'
-
 module FreeCite
 
   describe TokenFeatures do

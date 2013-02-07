@@ -6,7 +6,6 @@ require 'free_cite/token_features'
 require 'tempfile'
 require 'nokogiri'
 require 'cgi'
-require 'pry'
 
 module FreeCite
 
