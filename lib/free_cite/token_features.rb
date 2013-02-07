@@ -232,10 +232,6 @@ module FreeCite
       toks[idx].idx_in_node
     end
 
-#    def end_of_node(toks, idx, author_names=nil)
-#      toks[idx].idx_in_node == toks[idx].node_token_count-1
-#    end
-
   end
 
 end

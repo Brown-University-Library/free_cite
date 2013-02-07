@@ -51,4 +51,3 @@ html:
     - 'is_in'            # 22
     - 'tag_name'         # 23
     - 'idx_in_node'      # 24
-      #    - 'end_of_node'      # 26
