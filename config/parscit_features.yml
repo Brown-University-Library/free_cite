@@ -51,5 +51,4 @@ html:
     - 'is_in'            # 22
     - 'tag_name'         # 23
     - 'idx_in_node'      # 24
-      #    - 'tag_parent_name'  # 25
       #    - 'end_of_node'      # 26

@@ -202,9 +202,9 @@ module FreeCite
     NODE_TYPES_BY_NAME = {
       'div'=>'div',
       'p'=>'p',
-      'ul'=>'div', # lump with div?
+      'ul'=>'div', # lump with div - higher-level structure
       'li'=>'li',
-      'tr'=>'div', # lump with div?
+      'tr'=>'div', # lump with div - higher-level structure
       'td'=>'td',
       'span'=>'span',
       'font'=>'span',
@@ -227,16 +227,6 @@ module FreeCite
       name = toks[idx].node.parent.name # node is always a text node; the informative one is the parent
       NODE_TYPES_BY_NAME[name.downcase] || 'other'
     end
-
-#    def tag_parent_name(toks, idx, author_names=nil)
-#      tag = toks[idx].node.parent
-#      if tag.parent
-#        name = tag.parent.name
-#        NODE_TYPES_BY_NAME[name.downcase] || 'other'
-#      else
-#        'unknown' # assume there is a parent, we just didn't capture it in the fragment
-#      end
-#    end
 
     def idx_in_node(toks, idx, author_names=nil)
       toks[idx].idx_in_node
