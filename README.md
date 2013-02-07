@@ -2,6 +2,8 @@
 
 Stripped-down version of [FreeCite](http://freecite.library.brown.edu/) which provides a simple Ruby API for citation parsing - UX not included.
 
+Adds a model for parsing HTML.
+
 Forked from [shoe's version](https://github.com/shoe/free_cite), which is a full Rails app, although we should probably have forked from [rsinger's](https://github.com/rsinger/free_cite).
 
 ## Install required packages

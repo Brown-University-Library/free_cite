@@ -4,11 +4,10 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |gem|
   gem.name          = "free_cite"
-  gem.version       = "1.0"
+  gem.version       = "2.0.1"
   gem.authors       = ["David Judd", "FreeCite"]
   gem.email         = ["david@academia.edu"]
-  gem.description   = %q{Wrapper around the core library from FreeCite, the open source citation parser}
-  gem.summary       = %q{Wrapper around the core library from FreeCite, the open source citation parser}
+  gem.description   = %q{Parse citations}
   gem.homepage      = "http://github.com/academia-edu/free_cite"
 
   gem.files         = `git ls-files`.split($\)
