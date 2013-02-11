@@ -8,6 +8,7 @@ Gem::Specification.new do |gem|
   gem.authors       = ["David Judd", "FreeCite"]
   gem.email         = ["david@academia.edu"]
   gem.description   = %q{Parse citations}
+  gem.summary       = %q{Parse citations}
   gem.homepage      = "http://github.com/academia-edu/free_cite"
 
   gem.files         = `git ls-files`.split($\)
