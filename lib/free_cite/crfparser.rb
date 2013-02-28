@@ -6,6 +6,7 @@ require 'free_cite/token_features'
 require 'tempfile'
 require 'nokogiri'
 require 'cgi'
+require 'engtagger'
 
 module FreeCite
 
@@ -90,7 +91,7 @@ module FreeCite
 
     def prepare_token_data(cstr, training=false)
       if training
-        tags = labeled_cite_components_as_tags(cstr.strip)
+        tags = tagged_string_2_tags(cstr.strip)
 
         labels, cstr = [], ''
         tags.each do |tag|
@@ -108,6 +109,8 @@ module FreeCite
 
       tokens = str_2_tokens(cstr.strip)
 
+      add_parts_of_speech(tokens)
+
       if training
         raise "#{labels.length} labels #{labels} do not match #{tokens.length} tokens #{tokens}" unless labels.length == tokens.length
         tokens.each_with_index do |tok, i|
@@ -120,8 +123,33 @@ module FreeCite
       return tokens
     end
 
-    def labeled_cite_components_as_tags(str)
-      Nokogiri::XML.fragment("<cite>#{str}</cite>").css('cite').children.reject(&:text?)
+    def add_parts_of_speech(tokens)
+      words = tokens.map(&:raw)
+      tagged = tagger.add_tags(words.join(' '))
+      tags = tagged_string_2_tags(tagged)
+
+      tokens.inject(tags) do |remaining_tags, token|
+        tags_remaining_after_labeling_with_first_matching(token, remaining_tags)
+      end
+    end
+
+    def tags_remaining_after_labeling_with_first_matching(token, tags)
+      taggable_part = token.np == "EMPTY" ? token.raw : token.np
+      if !(tags_after_match = tags.drop_while{ |tag| tag.text != taggable_part }).empty?
+        tag = tags_after_match.shift
+        token.part_of_speech = tag.name
+        tags_after_match
+      else
+        tags
+      end
+    end
+
+    def tagger
+      @tagger ||= EngTagger.new
+    end
+
+    def tagged_string_2_tags(str)
+      Nokogiri::XML.fragment("<string>#{str}</string>").css('string').children.reject(&:text?)
     end
 
     def str_2_tokens(str)
@@ -257,7 +285,7 @@ module FreeCite
   class Token
 
     attr_reader :node, :idx_in_node, :node_token_count
-    attr_accessor :label
+    attr_accessor :label, :part_of_speech
 
     def initialize(str, node=nil, idx_in_node=nil, node_token_count=nil)
       @str = str

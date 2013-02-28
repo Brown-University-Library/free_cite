@@ -277,6 +277,13 @@ module FreeCite
       @crfparser.is_in(['a','b','c'].map { |s| Token.new(s) }, 1).should == 'notInBook'
     end
 
+    it 'parts of speech' do
+      tokens = @crfparser.prepare_token_data('Yo: "This is a test. This is only a test"')
+      tokens.map(&:part_of_speech).should == ["nnp", "det", "vbz", "det", "nn", "det", "vbz", "rb", "det", "nn"]
+
+      @crfparser.part_of_speech(tokens, 0).should == 'nnp'
+    end
+
     private
 
     def tok_test_toklcnp(f, toks, idx)

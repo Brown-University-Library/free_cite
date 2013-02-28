@@ -232,6 +232,10 @@ module FreeCite
       toks[idx].idx_in_node
     end
 
+    def part_of_speech(toks, idx, author_names=nil)
+      toks[idx].part_of_speech
+    end
+
   end
 
 end

@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.version       = "2.0.1"
   gem.authors       = ["David Judd", "FreeCite"]
   gem.email         = ["david@academia.edu"]
-  gem.description   = %q{Parse citations}
+  gem.summary       = %q{Parse citations}
   gem.homepage      = "http://github.com/academia-edu/free_cite"
 
   gem.files         = `git ls-files`.split($\)
@@ -19,6 +19,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'activesupport'
   gem.add_dependency 'crfpp'
   gem.add_dependency 'nokogiri'
+  gem.add_dependency 'engtagger'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
