@@ -24,6 +24,7 @@ string:
     - 'location'         # 20
     - 'punct'            # 21
     - 'is_in'            # 22
+    - 'part_of_speech'   # 23
 
 html:
   feature_order:

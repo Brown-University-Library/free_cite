@@ -104,8 +104,9 @@ module FreeCite
         (toks[idx].np       =~ /[0-9]/)                 ? "hasDig"       : "nonNum"
     end
 
+    # ignores idx
     def possible_editor(toks, idx, author_names=nil)
-      if @possible_editor
+      if !@possible_editor.nil?
         @possible_editor
       else
         @possible_editor =
@@ -116,8 +117,10 @@ module FreeCite
 
     # if there is possible editor entry and "IN" preceeded by punctuation
     # this citation may be a book chapter
+    #
+    # ignores idx
     def possible_chapter(toks, idx, author_names=nil)
-      if @possible_chapter
+      if !@possible_chapter.nil?
         @possible_chapter
       else
         @possible_chapter =
@@ -127,8 +130,9 @@ module FreeCite
       end
     end
 
+    # ignores idx
     def is_proceeding(toks, idx, author_names=nil)
-      if @is_proceeding
+      if !@is_proceeding.nil?
         @is_proceeding
       else
         @is_proceeding =
@@ -138,6 +142,7 @@ module FreeCite
       end
     end
 
+    # TODO Generalize for following separators etc
     def is_in(toks, idx, author_names=nil)
       ((idx > 0) and
       (idx < (toks.length - 1)) and

@@ -89,33 +89,43 @@ module FreeCite
       str.split.map(&:downcase).map { |t| self.class.strip_punct(t) }
     end
 
-    def prepare_token_data(cstr, training=false)
+    def prepare_token_data(raw_string, training=false)
       if training
-        tags = tagged_string_2_tags(cstr.strip)
+        tags = tagged_string_2_tags(raw_string.strip)
 
-        labels, cstr = [], ''
+        labels, raw_string, joined_tokens = [], '', ''
         tags.each do |tag|
           raw = CGI.unescapeHTML(tag.inner_html)
 
           label = tag.name
           raise "Invalid label #{label} for:\n#{str}" if label.present? && !recognized_labels.include?(label)
 
-          token_count = str_2_tokens(raw).length
-          token_count.times { labels << label }
+          toks = str_2_tokens(raw)
 
-          cstr += "\n#{raw}"
+          labels << [label, joined_tokens.length]
+          joined_tokens += toks.map(&:raw).join
+          raw_string += "\n#{raw}"
         end
       end
 
-      tokens = str_2_tokens(cstr.strip)
-
-      add_parts_of_speech(tokens)
+      tokens = str_2_tokens(raw_string.strip)
 
       if training
-        raise "#{labels.length} labels #{labels} do not match #{tokens.length} tokens #{tokens}" unless labels.length == tokens.length
-        tokens.each_with_index do |tok, i|
-          tok.label = labels[i]
+        joined_tokens = ''
+        label, _ = labels.shift
+        next_label, end_idx = labels.shift unless labels.empty?
+
+        tokens.each do |tok|
+          tok.label = label
+          joined_tokens += tok.raw
+          if joined_tokens.length == end_idx
+            label = next_label
+            next_label, end_idx = labels.shift unless labels.empty?
+          elsif joined_tokens.length > end_idx && !labels.empty?
+            raise "Tokens do not match labels"
+          end
         end
+        raise "Unused label" unless labels.empty?
       end
 
       self.clear
@@ -123,33 +133,14 @@ module FreeCite
       return tokens
     end
 
-    def add_parts_of_speech(tokens)
-      words = tokens.map(&:raw)
-      tagged = tagger.add_tags(words.join(' '))
-      tags = tagged_string_2_tags(tagged)
-
-      tokens.inject(tags) do |remaining_tags, token|
-        tags_remaining_after_labeling_with_first_matching(token, remaining_tags)
-      end
-    end
-
-    def tags_remaining_after_labeling_with_first_matching(token, tags)
-      taggable_part = token.np == "EMPTY" ? token.raw : token.np
-      if !(tags_after_match = tags.drop_while{ |tag| tag.text != taggable_part }).empty?
-        tag = tags_after_match.shift
-        token.part_of_speech = tag.name
-        tags_after_match
-      else
-        tags
-      end
-    end
-
     def tagger
       @tagger ||= EngTagger.new
     end
 
     def tagged_string_2_tags(str)
-      Nokogiri::XML.fragment("<string>#{str}</string>").css('string').children.reject(&:text?)
+      str = "<string>#{str}</string>"
+      node = Nokogiri::XML.fragment(str).css('string')
+      node.children.reject(&:text?)
     end
 
     def str_2_tokens(str)
@@ -186,18 +177,21 @@ module FreeCite
       text = CGI.unescapeHTML(node.text)
       return [] if text.blank?
 
-      raw_toks = text.split(/[[:space:]]+/)
-      raw_toks.each_with_index.map { |t,i| Token.new(t, node, i, raw_toks.length) }
+      tokens = text_str_2_tokens(text)
+      tokens.each_with_index { |tok, i| tok.is_in_node!(node, i, tokens.length) }
+      tokens
     end
 
     def text_str_2_tokens(text)
-      text.split(/[[:space:]]+/).map { |s| Token.new(s) }
+      tagged = tagger.add_tags(text) # hack because EngTagger/toutf8 does some kind of conversion to double-UTF-8 otherwise which is broken
+      tags = tagged_string_2_tags(tagged.gsub('&','&amp;')) # EngTagger has legitimately added angle brackets which are meaningful in XML, but angle-brackets predate EngTagger and are semantic
+      tags.map { |tag| Token.new(tag.text, tag.name) }
     end
 
     # calculate features on the full citation string
-    def str_2_features(cstr, training=false, presumed_author=nil)
+    def str_2_features(raw_string, training=false, presumed_author=nil)
       features = []
-      tokens = prepare_token_data(cstr, training)
+      tokens = prepare_token_data(raw_string, training)
 
       author_names = normalize_input_author(presumed_author)
 
@@ -284,11 +278,15 @@ module FreeCite
 
   class Token
 
-    attr_reader :node, :idx_in_node, :node_token_count
-    attr_accessor :label, :part_of_speech
+    attr_reader :node, :idx_in_node, :node_token_count, :part_of_speech
+    attr_accessor :label
 
-    def initialize(str, node=nil, idx_in_node=nil, node_token_count=nil)
+    def initialize(str, part_of_speech=nil)
       @str = str
+      @part_of_speech = part_of_speech
+    end
+
+    def is_in_node!(node, idx_in_node, node_token_count)
       @node = node
       @idx_in_node = idx_in_node
       @node_token_count = node_token_count
@@ -311,7 +309,7 @@ module FreeCite
     end
 
     def to_s
-      raw
+      "{#{raw}}"
     end
   end
 

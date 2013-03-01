@@ -279,7 +279,8 @@ module FreeCite
 
     it 'parts of speech' do
       tokens = @crfparser.prepare_token_data('Yo: "This is a test. This is only a test"')
-      tokens.map(&:part_of_speech).should == ["nnp", "det", "vbz", "det", "nn", "det", "vbz", "rb", "det", "nn"]
+      tokens.map(&:part_of_speech).should ==
+        ["nnp", "pps", "ppl", "det", "vbz", "det", "nn", "pp", "det", "vbz", "rb", "det", "nn", "ppr"]
 
       @crfparser.part_of_speech(tokens, 0).should == 'nnp'
     end
@@ -355,8 +356,7 @@ module FreeCite
     def tok_test_last_char(f, toks, idx)
       a = nil
       assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
-      a.should be_a String
-      a.length.should == 1
+      a.to_s.length.should == 1
       assert(a == 'a' || a == 'A' || a == 0 || toks[idx].raw.end_with?(a))
     end
 
@@ -498,6 +498,12 @@ module FreeCite
       a = nil
       assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       assert(['possibleChapter', 'noChapter'].include?(a))
+    end
+
+    def tok_test_part_of_speech(f, toks, idx)
+      a = nil
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      a.should_not be_nil
     end
 
     # hacks for conversion from test unit

@@ -1,10 +1,15 @@
+GIT
+  remote: git://github.com/academia-edu/engtagger.git
+  revision: 89af3ad6d8299f80e25dad64a4fd49e6a991abaf
+  specs:
+    engtagger (0.1.2)
+
 PATH
   remote: .
   specs:
     free_cite (2.0.1)
       activesupport
       crfpp
-      engtagger
       nokogiri
       openurl
 
@@ -25,9 +30,8 @@ GEM
       debugger-ruby_core_source (>= 1.1.1)
     debugger-ruby_core_source (1.1.6)
     diff-lcs (1.1.3)
-    engtagger (0.1.2)
     ensure_valid_encoding (0.5.3)
-    i18n (0.6.1)
+    i18n (0.6.4)
     marc (0.5.0)
     method_source (0.8.1)
     multi_json (1.6.1)
@@ -57,6 +61,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  engtagger!
   free_cite!
   pry
   pry-debugger

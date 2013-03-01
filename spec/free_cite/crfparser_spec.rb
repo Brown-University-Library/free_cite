@@ -31,21 +31,28 @@ module FreeCite
           toks = CRFParser.new(:html).prepare_token_data(TAGGED_HTML, true)
 
           expected = [
-            ['González-Bailón,','li','author'],
+            ['González-Bailón','li','author'],
+            [',','li','author'],
             ['S.','li','author'],
-            ['(2009)','li', 'date'],
+            ['(','li','date'],
+            ['2009','li','date'],
+            [')','li', 'date'],
             ['Traps','a','title'],
             ['on','a','title'],
             ['the','a','title'],
             ['Web','a','title'],
             ['.','li','title'],
-            ['Information,','li','journal'],
+            ['Information','li','journal'],
+            [',','li','journal'],
             ['Communication','li','journal'],
             ['&','li','journal'],
             ['Society','li','journal'],
             ['12','li','volume'],
-            ['(8)','li','volume'],
-            ['1149-1173.', 'li', 'pages']
+            ['(','li','volume'],
+            ['8','li','volume'],
+            [')','li','volume'],
+            ['1149-1173', 'li', 'pages'],
+            ['.','li','pages']
           ]
 
           toks.length.should == expected.length
