@@ -94,7 +94,7 @@ module FreeCite
     def numbers(toks, idx, author_names=nil)
       (toks[idx].raw           =~ /[0-9]\-[0-9]/)          ? "possiblePage" :
         (toks[idx].raw         =~ /^\D*(19|20)[0-9][0-9]\D*$/)   ? "year"         :
-        (toks[idx].raw         =~ /[0-9]\([0-9]+\)/)       ? "possibleVol"  :
+        #(toks[idx].raw         =~ /[0-9]\([0-9]+\)/)       ? "possibleVol"  :
         (toks[idx].np       =~ /^(19|20)[0-9][0-9]$/)   ? "year"         :
         (toks[idx].np       =~ /^[0-9]$/)               ? "1dig"         :
         (toks[idx].np       =~ /^[0-9][0-9]$/)          ? "2dig"         :
