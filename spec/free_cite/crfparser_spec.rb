@@ -84,13 +84,18 @@ module FreeCite
           expected = [
             ['Author','b'],
             ['Name','b'],
-            ['(2012)','li'],
+            ['(', 'li'],
+            ['2012', 'li'],
+            [')','li'],
             ['Paper','a'],
-            ['Title.','a'],
+            ['Title','a'],
+            ['.','a'],
             ['Journal','li'],
             ['Title','li'],
-            ['15:2','li'],
-            ['123-234.','li']
+            ['15','li'],
+            [':2','li'],
+            ['123-234','li'],
+            ['.','li']
           ]
 
           toks = CRFParser.new(:html).prepare_token_data(HTML)

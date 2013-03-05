@@ -53,8 +53,8 @@ module FreeCite
       tags, overall_prob, tag_probs = eval_crfpp(features, model)
 
       ret = {}
-      tags.each_with_index { |t, i| (ret[t] ||= []) << toks[i] }
-      ret.each { |k, v| ret[k] = v.join(' ') }
+      tags.each_with_index { |t, i| (ret[t] ||= []) << toks[i].for_join }
+      ret.each { |k, v| ret[k] = v.join('').strip }
 
       normalize_fields(ret)
       ret['raw_string'] = raw_string
@@ -209,7 +209,7 @@ module FreeCite
         features.last << tok.label if training
       end
 
-      [tokens.map(&:raw), features]
+      [tokens, features]
     end
 
     def write_training_file(tagged_refs=nil, training_data=TRAINING_DATA)
@@ -310,6 +310,14 @@ module FreeCite
 
     def to_s
       "{#{raw}}"
+    end
+
+    def for_join
+      if ['pp','ppc','ppr','pps','rrb'].include?(part_of_speech)
+        raw
+      else
+        " "+raw
+      end
     end
   end
 

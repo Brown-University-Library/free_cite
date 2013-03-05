@@ -94,7 +94,6 @@ module FreeCite
     def numbers(toks, idx, author_names=nil)
       (toks[idx].raw           =~ /[0-9]\-[0-9]/)          ? "possiblePage" :
         (toks[idx].raw         =~ /^\D*(19|20)[0-9][0-9]\D*$/)   ? "year"         :
-        #(toks[idx].raw         =~ /[0-9]\([0-9]+\)/)       ? "possibleVol"  :
         (toks[idx].np       =~ /^(19|20)[0-9][0-9]$/)   ? "year"         :
         (toks[idx].np       =~ /^[0-9]$/)               ? "1dig"         :
         (toks[idx].np       =~ /^[0-9][0-9]$/)          ? "2dig"         :
@@ -105,7 +104,7 @@ module FreeCite
     end
 
     # ignores idx
-    def possible_editor(toks, idx, author_names=nil)
+    def possible_editor(toks, idx=nil, author_names=nil)
       if !@possible_editor.nil?
         @possible_editor
       else
@@ -119,19 +118,24 @@ module FreeCite
     # this citation may be a book chapter
     #
     # ignores idx
-    def possible_chapter(toks, idx, author_names=nil)
+    def possible_chapter(toks, idx=nil, author_names=nil)
       if !@possible_chapter.nil?
         @possible_chapter
       else
-        @possible_chapter =
-          ((possible_editor(toks, idx) and
-          (toks.join(" ") =~ /[\.,;]\s*in[:\s]/i)) ?
-            "possibleChapter" : "noChapter")
+        has_editor = possible_editor(toks) == 'possibleEditors'
+        has_chapter = toks.each_with_index.any? do |t, i|
+          if i > 0 && i < (toks.length-1) && t.lcnp == 'in'
+            prev_is_separator = ['pp','ppr','ppc','pps'].include?(toks[i-1].part_of_speech)
+            next_is_separator = ['ppl','ppc','pps'].include?(toks[i+1].part_of_speech)
+            prev_is_separator && (has_editor || next_is_separator)
+          end
+        end
+        has_chapter ? "possibleChapter" : "noChapter"
       end
     end
 
     # ignores idx
-    def is_proceeding(toks, idx, author_names=nil)
+    def is_proceeding(toks, idx=nil, author_names=nil)
       if !@is_proceeding.nil?
         @is_proceeding
       else
@@ -142,25 +146,14 @@ module FreeCite
       end
     end
 
-    # TODO Generalize for following separators etc
+    # TODO remove duplication with possible_chapter
     def is_in(toks, idx, author_names=nil)
-      ((idx > 0) and
-      (idx < (toks.length - 1)) and
-      (toks[idx+1].np =~ /^[A-Z]/) and
-      (toks[idx].lcnp == 'in') and
-      (toks[idx-1].raw =~ /[#{SEPARATORS}#{QUOTES}]/))? "inBook" : "notInBook"
-    end
-
-    def is_et_al(toks, idx, author_names=nil)
-      a = false
-      a = ((toks[idx-1].lcnp == 'et') and (toks[idx].lcnp == 'al')) if idx > 0
-      return a if a
-
-      if idx < toks.length - 1
-        a = ((toks[idx].lcnp == 'et') and (toks[idx+1].lcnp == 'al'))
+      is_in = if idx > 0 && idx < (toks.length-1) && toks[idx].lcnp == 'in'
+        prev_is_separator = ['pp','ppr','ppc','pps'].include?(toks[idx-1].part_of_speech)
+        next_is_separator = ['ppl','ppc','pps'].include?(toks[idx+1].part_of_speech)
+        prev_is_separator && (next_is_separator || toks[idx+1].np =~ /^[A-Z]/)
       end
-
-      return (a ? "isEtAl" : "noEtAl")
+      is_in ? "inBook" : "notInBook"
     end
 
     def location(toks, idx, author_names=nil)

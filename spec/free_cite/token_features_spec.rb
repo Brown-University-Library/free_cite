@@ -215,8 +215,8 @@ module FreeCite
       pairs =
         [[['12-34'], 'possiblePage'],
         [['19-99'], 'possiblePage'],
-        [['19(99):'], 'possibleVol'],
-        [['19(99)'], 'possibleVol'],
+        [['19(99):'], 'year'],
+        [['19(99)'], 'year'],
         [['(8999)'], '4+dig'],
         [['(1999)'], 'year'],
         [['(2999)23094'], '4+dig'],
@@ -247,12 +247,11 @@ module FreeCite
       }
 
       @crfparser.possible_editor(ee.map { |s| Token.new(s) }, 0)
-      e = @crfparser.possible_editor([Token.new("foo")], 0)
-      assert_equal("possibleEditors", e)
+      @crfparser.possible_editor([Token.new("foo")], 0).should == 'possibleEditors'
 
       @crfparser.clear
       ee = %w(foo bar 123SFOIEJ EDITUR)
-      assert_equal("noEditors", @crfparser.possible_editor(ee.map { |s| Token.new(s) }, 0))
+      @crfparser.possible_editor(ee.map { |s| Token.new(s) }, 0).should == 'noEditors'
     end
 
     it 'possible_chapter' do
@@ -265,14 +264,26 @@ module FreeCite
       not_refs = ['Morse, D. H. 2006. Predator upon a flower. In final revision, scheduled for publication in Fall 2006 or Winter 2007. Harvard University Press. (ca. 400 pp.).',
       'Goldstein J, Perello M, and Nillni EA . 2005. PreproThyrotropin-Releasing Hormone178-199 Affects Tyrosine Hydroxylase Biosynthesis in Hypothalamic Neurons: a Possible Role for Pituitary Prolactin Regulation . In press Journal of Molecular Neuroscience 2006.',
       'Mulcahy LR, and Nillni EA. 2007 . Invited Review. The role of prohormone processing in the physiology of energy balance. Frontiers in Bioscience.']
+
+      refs.each do |s|
+        tokens = @crfparser.prepare_token_data(s)
+        @crfparser.possible_chapter(tokens).should == 'possibleChapter'
+      end
+
+      not_refs.each do |s|
+        tokens = @crfparser.prepare_token_data(s)
+        @crfparser.possible_chapter(tokens).should == 'noChapter'
+      end
     end
 
     it 'in book' do
-      book_tokens = 'end. In "Title'.split.map { |s| Token.new(s) }
+      book_tokens = @crfparser.prepare_token_data('end. In "Title')
 
-      @crfparser.is_in(book_tokens, 1).should == 'inBook'
-      @crfparser.is_in(book_tokens, 0).should == 'notInBook'
-      @crfparser.is_in(book_tokens, 2).should == 'notInBook'
+      book_tokens.length.should == 5
+      (0..book_tokens.length-1).each do |i|
+        expected = i == 2 ? 'inBook' : 'notInBook'
+        @crfparser.is_in(book_tokens, i).should == expected
+      end
 
       @crfparser.is_in(['a','b','c'].map { |s| Token.new(s) }, 1).should == 'notInBook'
     end
@@ -308,12 +319,6 @@ module FreeCite
         assert_equal(1, a.length)
       end
       assert(toks[idx].raw.end_with?(a))
-    end
-
-    def tok_test_is_et_al(f, toks, idx)
-      a = nil
-      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
-      assert(["isEtAl", "noEtAl"].include?(a))
     end
 
     def tok_test_first_2_chars(f, toks, idx)
