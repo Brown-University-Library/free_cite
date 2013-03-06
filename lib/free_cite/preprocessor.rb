@@ -11,7 +11,18 @@ module FreeCite
       :NAKEDNUMDOT  => '\\d+\\.',
     }
 
-    CLEANUP_RULES = YAML.load_file "#{File.dirname(__FILE__)}/../../config/citation_cleanup_rules.yml"
+    CLEANUP_RULES_FILE = "#{File.dirname(__FILE__)}/../../config/citation_cleanup_rules.yml"
+
+    def cleanup_rules
+      return @rules if @rules
+
+      raw = YAML.load_file CLEANUP_RULES_FILE
+      @rules = raw['order'].map do |rule_name|
+        re = Regexp.new(raw['rules'][rule_name]['regex'], raw['rules'][rule_name]['ignore_case'])
+        repl = raw['rules'][rule_name]['replacement_str'] || ''
+        { re: re, repl: repl }
+      end
+    end
 
     ##
     # Removes lines that appear to be junk from the citation text,
@@ -28,9 +39,8 @@ module FreeCite
     def normalize_citation(cite)
       cite = cite.dup
 
-      CLEANUP_RULES['order'].each do |rule_name|
-        re = Regexp.new(CLEANUP_RULES['rules'][rule_name]['regex'], CLEANUP_RULES['rules'][rule_name]['ignore_case'])
-        cite.gsub!(re, CLEANUP_RULES['rules'][rule_name]['replacement_str'] || '')
+      cleanup_rules.each do |rule|
+        cite.gsub!(rule[:re], rule[:repl])
       end
 
       cite

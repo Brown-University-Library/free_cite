@@ -66,7 +66,7 @@ describe FreeCite do
 
     it "parses quoted journal article title" do
       cite = FreeCite.parse_string('“Standing in Livestock’s ‘Long Shadow’: The Ethics of Eating Meat on a Small Planet,” Ethics & the Environment 16 (2011): 63-93. (pdf)')
-      title_should_be(cite, 'Standing in Livestock’s ‘Long Shadow’: The Ethics of Eating Meat on a Small Planet')
+      title_should_be(cite, 'Standing in Livestock\'s `Long Shadow\': The Ethics of Eating Meat on a Small Planet')
     end
 
     it "parses citation prefixed by number" do
@@ -79,27 +79,14 @@ describe FreeCite do
       title_should_be(cite, 'High pressure neutron diffraction study of GeO2 glass up to 17.5 GPa')
     end
 
-    it "takes advantage of name not in dict" do
-      cite_str = "John Xkcd Analyzing Phonetic Variation. Journal of Digital Scholarship\nNov. 2011"
-
-      cite_no_name = FreeCite.parse_string(cite_str)
-      title_should_be(cite_no_name, "Xkcd Analyzing Phonetic Variation")
-
-      cite_with_name = FreeCite.parse_string(cite_str, "John Xkcd")
-      title_should_be(cite_with_name, "Analyzing Phonetic Variation")
+    it "parses citation with name not in dict" do
+      cite = FreeCite.parse_string("John Xkcd, Analyzing Phonetic Variation. Journal of Digital Scholarship\nNov. 2011", "John Xkcd")
+      title_should_be(cite, "Analyzing Phonetic Variation")
     end
 
-    context "not yet working" do
-
-      before do
-        pending "would be nice to fix these"
-      end
-
-      it "parses citation with parenthetical comment" do
-        cite = FreeCite.parse_string('The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos (University of Pittsburgh Press 2005). (Awarded the Metaphysical Society of America’s 2007 John N. Findlay Book Prize.)')
-        title_should_be(cite, 'The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos')
-      end
-
+    it "parses citation with parenthetical comment" do
+      cite = FreeCite.parse_string('The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos (University of Pittsburgh Press 2005). (Awarded the Metaphysical Society of America’s 2007 John N. Findlay Book Prize.)')
+      title_should_be(cite, 'The Ethics of Creativity: Beauty, Morality, and Nature in a Processive Cosmos')
     end
 
   end

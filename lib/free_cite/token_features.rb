@@ -4,17 +4,22 @@ module FreeCite
 
   module TokenFeatures
 
-    QUOTES = Regexp.escape('"\'”’´‘“`')
-    SEPARATORS = Regexp.escape(".;,)")
+    module DictFlags
+      PUBLISHER_NAME = 32
+      PLACE_NAME = 16
+      MONTH_NAME = 8
+      LAST_NAME = 4
+      FIRST_NAME = 1
+    end
 
     def TokenFeatures.read_dict_files(dir_name)
       dict = {}
       [
-        ['first-names',1],
-        ['surnames',4],
-        ['months',8],
-        ['places',16],
-        ['publishers',32],
+        ['first-names',DictFlags::FIRST_NAME],
+        ['surnames',DictFlags::LAST_NAME],
+        ['months',DictFlags::MONTH_NAME],
+        ['places',DictFlags::PLACE_NAME],
+        ['publishers',DictFlags::PUBLISHER_NAME],
       ].each do |file_name, flag|
         filename = File.join(dir_name, file_name)
         f = File.open(filename, 'r')
@@ -36,12 +41,6 @@ module FreeCite
 
     DIR = File.dirname(__FILE__)
     DICT = TokenFeatures.read_dict_files("#{DIR}/resources/dicts")
-    DICT_FLAGS =
-      {'publisherName' =>  32,
-      'placeName'     =>  16,
-      'monthName'     =>  8,
-      'lastName'      =>  4,
-      'firstName'      =>  1}
 
     private_class_method :read_dict_files
 
@@ -80,11 +79,13 @@ module FreeCite
 
     def capitalization(toks, idx, author_names=nil)
       case toks[idx].np
-        when /^[A-Z]$/
+        when "EMPTY"
+          "others"
+        when /^[[:upper:]]$/
           "singleCap"
-        when /^[A-Z][a-z]+/
+        when /^[[:upper:]][[:lower:]]+/
           "InitCap"
-        when /^[A-Z]+$/
+        when /^[[:upper:]]+$/
           "AllCap"
         else
           "others"
@@ -161,40 +162,47 @@ module FreeCite
     end
 
     def punct(toks, idx, author_names=nil)
-      (toks[idx].raw   =~ /^[#{QUOTES}]/)                    ? "leadQuote"   :
-        (toks[idx].raw =~ /[#{QUOTES}][^s]?$/)               ? "endQuote"    :
-        (toks[idx].raw =~ /\-.*\-/)                       ? "multiHyphen" :
-        (toks[idx].raw =~ /[\-\,\:\;]$/)                  ? "contPunct"   :
-        (toks[idx].raw =~ /[\!\?\.\"\']$/)                ? "stopPunct"   :
-        (toks[idx].raw =~ /^[\(\[\{\<].+[\)\]\}\>].?$/)   ? "braces"      :
-        (toks[idx].raw =~ /^[0-9]{2,5}\([0-9]{2,5}\).?$/) ? "possibleVol" : "others"
+      (toks[idx].raw =~ /\-.*\-/)              ? "multiHyphen" :
+      (toks[idx].raw =~ /[[:alpha:]].*\-$/)    ? "truncated"   :
+      (toks[idx].raw =~ /[[:alpha:]].*\.$/)    ? "abbrev"      :
+      (toks[idx].np != toks[idx].raw)          ? "hasPunct"    : "others"
     end
 
+    # TODO
+    def possible_volume(toks, idx, author_names=nil)
+      #(toks[idx].raw =~ /^[0-9]{2,5}\([0-9]{2,5}\).?$/) ? "possibleVol" : "others"
+    end
+
+    # TODO this method is weirdly named b/c of alphabetical ordering hack: remove that
     def a_is_in_dict(toks, idx, author_names=nil)
-      ret = {}
-      @dict_status = (DICT[toks[idx].lcnp] ? DICT[toks[idx].lcnp] : 0)
+      dict_status(toks, idx)
     end
 
     def publisherName(toks, idx, author_names=nil)
-      (@dict_status & DICT_FLAGS['publisherName']) > 0 ? 'publisherName' : 'noPublisherName'
+      (dict_status(toks, idx) & DictFlags::PUBLISHER_NAME) > 0 ? 'publisherName' : 'noPublisherName'
     end
 
     def placeName(toks, idx, author_names=nil)
-      (@dict_status & DICT_FLAGS['placeName']) > 0 ? 'placeName' : 'noPlaceName'
+      (dict_status(toks, idx) & DictFlags::PLACE_NAME) > 0 ? 'placeName' : 'noPlaceName'
     end
 
     def monthName(toks, idx, author_names=nil)
-      (@dict_status & DICT_FLAGS['monthName']) > 0 ? 'monthName' : 'noMonthName'
+      (dict_status(toks, idx) & DictFlags::MONTH_NAME) > 0 ? 'monthName' : 'noMonthName'
     end
 
     def lastName(toks, idx, author_names=nil)
-      return 'lastName' if author_names && author_names.any? { |name| toks[idx].lcnp == name }
-      (@dict_status & DICT_FLAGS['lastName']) > 0 ? 'lastName' : 'noLastName'
+      return 'lastName' if author_names && author_names.last == toks[idx].lcnp
+      (dict_status(toks, idx) & DictFlags::LAST_NAME) > 0 ? 'lastName' : 'noLastName'
     end
 
     def firstName(toks, idx, author_names=nil)
       return 'firstName' if author_names && author_names.first == toks[idx].lcnp
-      (@dict_status & DICT_FLAGS['firstName']) > 0 ? 'firstName' : 'noFirstName'
+      (dict_status(toks, idx) & DictFlags::FIRST_NAME) > 0 ? 'firstName' : 'noFirstName'
+    end
+
+    def dict_status(toks, idx)
+      @dict_status ||= [nil]*toks.length
+      @dict_status[idx] ||= (DICT[toks[idx].lcnp] || 0)
     end
 
     NODE_TYPES_BY_NAME = {

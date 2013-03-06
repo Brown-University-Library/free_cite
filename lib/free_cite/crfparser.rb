@@ -47,13 +47,12 @@ module FreeCite
 
     def parse(str, presumed_author=nil)
       raw_string = str.dup
-      str = normalize_cite_text(str) if @mode == :string
 
       toks, features = str_2_features(str, false, presumed_author)
       tags, overall_prob, tag_probs = eval_crfpp(features, model)
 
       ret = {}
-      tags.each_with_index { |t, i| (ret[t] ||= []) << toks[i].for_join }
+      tags.each_with_index { |t, i| (ret[t] ||= []) << toks[i].for_join(toks[i-1]) }
       ret.each { |k, v| ret[k] = v.join('').strip }
 
       normalize_fields(ret)
@@ -86,7 +85,7 @@ module FreeCite
 
     def normalize_input_author(str)
       return nil if str.blank?
-      str.split.map(&:downcase).map { |t| self.class.strip_punct(t) }
+      str.split.map(&:downcase).map{ |t| self.class.strip_punct(t) }.select{ |s| s.length > 2 }
     end
 
     def prepare_token_data(raw_string, training=false)
@@ -183,7 +182,7 @@ module FreeCite
     end
 
     def text_str_2_tokens(text)
-      tagged = tagger.add_tags(text) # hack because EngTagger/toutf8 does some kind of conversion to double-UTF-8 otherwise which is broken
+      tagged = tagger.add_tags(normalize_citation(text))
       tags = tagged_string_2_tags(tagged.gsub('&','&amp;')) # EngTagger has legitimately added angle brackets which are meaningful in XML, but angle-brackets predate EngTagger and are semantic
       tags.map { |tag| Token.new(tag.text, tag.name) }
     end
@@ -312,8 +311,10 @@ module FreeCite
       "{#{raw}}"
     end
 
-    def for_join
-      if ['pp','ppc','ppr','pps','rrb'].include?(part_of_speech)
+    def for_join(prev)
+      if ['pp','ppc','ppr','pps','rrb', 'pos'].include?(part_of_speech)
+        raw
+      elsif prev && ['ppd','ppl','lrb'].include?(prev.part_of_speech)
         raw
       else
         " "+raw

@@ -205,7 +205,9 @@ module FreeCite
       [["IMPROVING"], 'AllCap'],
       [["ThE234"], 'InitCap'],
       [["efficiency"], 'others'],
-      [["1978"], 'others']]
+      [["1978"], 'others'],
+      [[","], 'others']]
+
       pairs.each {|a, b|
         assert_equal(b, @crfparser.capitalization(a.map { |s| Token.new(s) }, 0))
       }
@@ -294,6 +296,48 @@ module FreeCite
         ["nnp", "pps", "ppl", "det", "vbz", "det", "nn", "pp", "det", "vbz", "rb", "det", "nn", "ppr"]
 
       @crfparser.part_of_speech(tokens, 0).should == 'nnp'
+    end
+
+    it 'quotes' do
+
+    end
+
+    it "punct" do
+      tokens = @crfparser.prepare_token_data("A. Smith wrote some-\nthing: AB-CD-EF")
+      labels = (0..tokens.length-1).map{ |i| @crfparser.punct(tokens, i) }
+      labels.should == ['abbrev','others','others','truncated','others','hasPunct','multiHyphen']
+    end
+
+    it "names" do
+      tokens = @crfparser.prepare_token_data("John Smith")
+
+      @crfparser.firstName(tokens, 0).should == 'firstName'
+      @crfparser.lastName(tokens, 1).should == 'lastName'
+    end
+
+    it "name not in dict" do
+      name = 'Arble D Garbled'
+      processed_name = @crfparser.normalize_input_author(name)
+      tokens = @crfparser.prepare_token_data(name)
+      result = (0..tokens.length-1).map do |i|
+        {
+          fname_from_dict: @crfparser.firstName(tokens, i),
+          lname_from_dict: @crfparser.lastName(tokens, i),
+          fname_with_given: @crfparser.firstName(tokens, i, processed_name),
+          lname_with_given: @crfparser.lastName(tokens, i, processed_name)
+        }
+      end
+
+      result.each { |r| r[:fname_from_dict].should == 'noFirstName' }
+      result.each { |r| r[:lname_from_dict].should == 'noLastName' }
+
+      result[0][:fname_with_given].should == 'firstName'
+      result[1][:fname_with_given].should == 'noFirstName'
+      result[2][:fname_with_given].should == 'noFirstName'
+
+      result[0][:lname_with_given].should == 'noLastName'
+      result[1][:lname_with_given].should == 'noLastName'
+      result[2][:lname_with_given].should == 'lastName'
     end
 
     private
@@ -483,8 +527,7 @@ module FreeCite
     def tok_test_punct(f, toks, idx)
       a = nil
       assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
-      b = %w(leadQuote endQuote multiHyphen contPunct stopPunct
-        braces possibleVol others).include?(a)
+      b = %w(multiHyphen truncated abbrev hasPunct others).include?(a)
       assert(b)
     end
 
