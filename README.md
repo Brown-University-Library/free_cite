@@ -1,10 +1,27 @@
-# Academia FreeCite
+# Excite
 
-Stripped-down version of [FreeCite](http://freecite.library.brown.edu/) which provides a simple Ruby API for citation parsing - UX not included.
+Provides a simple Ruby API for parsing citations from plain text strings or HTML.
 
-Adds a model for parsing HTML.
+## Usage
 
-Forked from [shoe's version](https://github.com/shoe/free_cite), which is a full Rails app, although we should probably have forked from [rsinger's](https://github.com/rsinger/free_cite).
+```ruby
+  require 'excite'
+
+  Excite.parse_string("Wilcox, Rhonda V. 1991. Shifting roles and synthetic women in Star trek: The next generation. Studies in Popular Culture 13 (June): 53-65.")
+
+  Excite.parse_html("<span>Devine, PG, & Sherman, SJ</span><span>(1992)</span><strong>Intuitive versus rational judgment and the role of stereotyping in the human condition: Kirk or Spock?</strong><em>Psychological Inquiry</em><span>3(2), 153-159</span>")
+```
+
+## History and Credits
+
+Derived from [FreeCite](http://freecite.library.brown.edu/), minus Rails and all UI elements. The most up-to-date fork of FreeCite of which I am aware is [rsinger's](https://github.com/rsinger/free_cite). FreeCite in turn is inspired by [ParsCit](http://aye.comp.nus.edu.sg/parsCit/).
+
+The main changes are:
+* No UI, just a gem;
+* New model for parsing HTML;
+* Tokenization and part-of-speech features from [EngTagger](https://github.com/yohasebe/engtagger)
+
+Credit is due to the authors of all the linked projects, as well as Laura Durkay who marked up the HTML training data.
 
 ## Install required packages
 

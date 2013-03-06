@@ -110,6 +110,13 @@ describe Excite do
       cite[:journal].should == "Communications in Mathematical Sciences"
     end
 
+    it "parses cite wihout much punctuation" do
+      cite_str = "<span>Devine, PG, & Sherman, SJ</span><span>(1992)</span><strong>Intuitive versus rational judgment and the role of stereotyping in the human condition: Kirk or Spock?</strong><em>Psychological Inquiry</em><span>3(2), 153-159</span>"
+
+      cite = Excite.parse_html(cite_str)
+      title_should_be(cite, 'Intuitive versus rational judgment and the role of stereotyping in the human condition: Kirk or Spock')
+    end
+
   end
 
   def title_should_be(cite, title)
