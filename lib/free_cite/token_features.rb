@@ -247,8 +247,8 @@ module FreeCite
       NODE_TYPES_BY_NAME[name.downcase] || 'other'
     end
 
-    def idx_in_node(toks, idx, author_names=nil)
-      toks[idx].idx_in_node
+    def location_in_node(toks, idx, author_names=nil)
+      ((toks[idx].idx_in_node.to_f / toks[idx].node_token_count) * 10).round
     end
 
     def part_of_speech(toks, idx, author_names=nil)
