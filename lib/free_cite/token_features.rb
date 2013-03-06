@@ -168,9 +168,22 @@ module FreeCite
       (toks[idx].np != toks[idx].raw)          ? "hasPunct"    : "others"
     end
 
-    # TODO
     def possible_volume(toks, idx, author_names=nil)
-      #(toks[idx].raw =~ /^[0-9]{2,5}\([0-9]{2,5}\).?$/) ? "possibleVol" : "others"
+      if possible_vol_with_str(toks, idx)
+        'volume'
+      elsif possible_vol_with_str(toks, idx-1) && possible_issue_with_str(toks, idx)
+        'issue'
+      elsif possible_vol_with_str(toks, idx-2) && possible_issue_with_str(toks, idx-1) && possible_issue_with_str(toks, idx)
+        'issue'
+      elsif possible_vol_with_parens(toks, idx)
+        'volume'
+      elsif (1..3).any? { |i| possible_vol_with_parens(toks, idx-i) }
+        'issue'
+      elsif possible_vol_with_colon(toks, idx)
+        'volume'
+      else
+        'noVolume'
+      end
     end
 
     # TODO this method is weirdly named b/c of alphabetical ordering hack: remove that
@@ -240,6 +253,59 @@ module FreeCite
 
     def part_of_speech(toks, idx, author_names=nil)
       toks[idx].part_of_speech
+    end
+
+  private
+
+    def possible_issue_with_str(toks, idx)
+      return unless toks[idx]
+
+      possible_issue_str(toks, idx) ||
+        (possible_issue_str(toks, idx-1) && toks[idx].raw =~ /^\d+$/)
+    end
+
+    def possible_issue_str(toks, idx)
+      if toks[idx]
+        if toks[idx].raw =~ /^(no)|(issue)?\.?\d+.?$/i
+          return true
+        elsif toks[idx+1]
+          return ['no','issue'].include?(toks[idx].lcnp) && toks[idx+1].raw =~ /^\d+$/
+        end
+      end
+    end
+
+    def possible_vol_with_str(toks, idx)
+      return unless toks[idx]
+
+      possible_vol_str(toks, idx) ||
+        (possible_vol_str(toks, idx-1) && (toks[idx].raw =~ /^\d+$/ || toks[idx].raw == ',')) ||
+        (possible_vol_str(toks, idx-2) && toks[idx-1].raw =~ /^\d+$/ && toks[idx].raw == ',')
+    end
+
+    def possible_vol_str(toks, idx)
+      if toks[idx]
+        if toks[idx].raw =~ /^vol(ume)?\.?\d+.?$/i
+          return true
+        elsif toks[idx+1]
+          return ['vol','volume'].include?(toks[idx].lcnp) && toks[idx+1].raw =~ /^\d+$/
+        end
+      end
+    end
+
+    def possible_vol_with_parens(toks, idx)
+      if toks[idx] && toks[idx+3]
+        toks[idx].raw =~ /^\d+$/ && toks[idx+1].raw == '(' && toks[idx+2].raw =~ /^\d+$/ && toks[idx+3].raw == ')'
+      end
+    end
+
+    def possible_vol_with_colon(toks, idx)
+      if toks[idx] && toks[idx+1]
+        # case of <year>: something is common so make sure we exclude it
+        if toks[idx].np =~ /^\d{1,3}$/ && toks[idx+1].raw =~ /^:/
+          # at this point it's likely a volume, but exclude it if it's not followed by an apparent page or issue
+          toks[idx+1].np =~ /^\d+$/ || (toks[idx+1].raw == ':' && toks[idx+2] && toks[idx+2].np =~ /^\d+/)
+        end
+      end
     end
 
   end

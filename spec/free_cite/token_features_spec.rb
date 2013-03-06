@@ -290,16 +290,79 @@ module FreeCite
       @crfparser.is_in(['a','b','c'].map { |s| Token.new(s) }, 1).should == 'notInBook'
     end
 
+    it 'possible volume' do
+      spaced_vols = [
+        "Vol. 5, No. 6",
+        "vol. 2 no. 1",
+        "Volume 22 Issue 14"
+      ]
+      spaced_vols.each do |vol|
+        toks = @crfparser.prepare_token_data(vol)
+        [0,1].each { |i| @crfparser.possible_volume(toks, i).should == 'volume' }
+        [-2,-1].each { |i| @crfparser.possible_volume(toks, i).should == 'issue' }
+      end
+
+      compressed_vols = [
+        "Vol.19, No.1",
+        "Vol.19 No.1",
+      ]
+      compressed_vols.each do |vol|
+        toks = @crfparser.prepare_token_data(vol)
+        @crfparser.possible_volume(toks, 0).should == 'volume'
+        @crfparser.possible_volume(toks, -1).should == 'issue'
+      end
+
+      parens_vols = [
+        "10(7)",
+        "21(2):",
+        "44 (2)",
+        "38( 3)"
+      ]
+      parens_vols.each do |vol|
+        toks = @crfparser.prepare_token_data(vol)
+        @crfparser.possible_volume(toks, 0).should == 'volume'
+        (1..3).each { |i| @crfparser.possible_volume(toks, i).should == 'issue' }
+      end
+
+      colon_vols = [
+        "19:3-4",
+        "29:1, 287-291.",
+        "38: 942-949.",
+        "1: 3",
+      ]
+      colon_vols.each do |vol|
+        toks = @crfparser.prepare_token_data(vol)
+        @crfparser.possible_volume(toks, 0).should == 'volume'
+        (1..toks.length-1).each { |i| @crfparser.possible_volume(toks, i).should == 'noVolume' }
+      end
+
+      not_vols = [
+        "18, 1988",
+        "1977.",
+        "(2002)",
+        "No. 1: (2002)",
+        "4 234 34093",
+        "122-123,",
+        "38, (3)",
+        "2007: 35-65",
+        "Web 2.0: an",
+        "this volume",
+        "1 issue",
+        "issue, 1st",
+        "no. 1"
+      ]
+      not_vols.each do |vol|
+        toks = @crfparser.prepare_token_data(vol)
+        (0..toks.length-1).each { |i| @crfparser.possible_volume(toks, i).should == 'noVolume' }
+      end
+    end
+
     it 'parts of speech' do
       tokens = @crfparser.prepare_token_data('Yo: "This is a test. This is only a test"')
       tokens.map(&:part_of_speech).should ==
         ["nnp", "pps", "ppl", "det", "vbz", "det", "nn", "pp", "det", "vbz", "rb", "det", "nn", "ppr"]
 
       @crfparser.part_of_speech(tokens, 0).should == 'nnp'
-    end
-
-    it 'quotes' do
-
     end
 
     it "punct" do
@@ -552,6 +615,12 @@ module FreeCite
       a = nil
       assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
       a.should_not be_nil
+    end
+
+    def tok_test_possible_volume(f, toks, idx)
+      a = nil
+      assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
+      ['volume','issue','noVolume'].include?(a)
     end
 
     # hacks for conversion from test unit

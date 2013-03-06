@@ -1,6 +1,6 @@
 # See config/parscit_features.yml for function-to-number correlation
 
-b# Unigram
+# Unigram
 U00:%x[-3,0]
 U01:%x[-2,0]
 U02:%x[-1,0]
