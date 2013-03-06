@@ -2,7 +2,7 @@ log
 .DS_Store
 tmp/
 *swp
-lib/free_cite/resources/trainingdata/training_data.txt
+lib/excite/resources/trainingdata/training_data.txt
 model/test/testing_data*txt
 model/test/testing_data*txt
 model/test/training_refs*txt

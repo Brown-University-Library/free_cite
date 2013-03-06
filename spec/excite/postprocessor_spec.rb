@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require 'free_cite/postprocessor'
+require 'excite/postprocessor'
 
 module Excite
 
