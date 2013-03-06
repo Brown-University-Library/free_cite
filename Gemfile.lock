@@ -7,7 +7,7 @@ GIT
 PATH
   remote: .
   specs:
-    free_cite (2.0.1)
+    excite (2.1.0)
       activesupport
       crfpp
       nokogiri
@@ -62,7 +62,7 @@ PLATFORMS
 
 DEPENDENCIES
   engtagger!
-  free_cite!
+  excite!
   pry
   pry-debugger
   rake

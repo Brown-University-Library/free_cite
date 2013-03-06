@@ -1,11 +1,14 @@
 # -*- encoding: utf-8 -*-
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
+require 'free_cite/version'
+
 Gem::Specification.new do |gem|
-  gem.name          = "free_cite"
-  gem.version       = "2.0.1"
-  gem.authors       = ["David Judd", "FreeCite"]
+  gem.name          = "excite"
+  gem.version       = Excite::VERSION
+  gem.authors       = ["David Judd"]
   gem.email         = ["david@academia.edu"]
   gem.summary       = %q{Parse citations}
   gem.homepage      = "http://github.com/academia-edu/free_cite"

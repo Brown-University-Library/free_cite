@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-module FreeCite
+module Excite
 
   describe CRFParser do
 

@@ -1,14 +1,11 @@
 # encoding: UTF-8
 
-require 'free_cite/preprocessor'
-require 'free_cite/postprocessor'
-require 'free_cite/token_features'
 require 'tempfile'
 require 'nokogiri'
 require 'cgi'
 require 'engtagger'
 
-module FreeCite
+module Excite
 
   class CRFParser
 

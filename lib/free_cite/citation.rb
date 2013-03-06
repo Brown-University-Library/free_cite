@@ -1,10 +1,8 @@
 # encoding: UTF-8
 
 require 'active_support/core_ext/object'
-require 'crfpp'
-require 'free_cite/crfparser'
 
-module FreeCite
+module Excite
 
   # parse a string into a citation
   # optionally pass the presumed author

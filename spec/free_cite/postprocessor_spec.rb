@@ -2,7 +2,7 @@
 
 require 'free_cite/postprocessor'
 
-module FreeCite
+module Excite
 
   describe Postprocessor do
 

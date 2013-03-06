@@ -26,7 +26,7 @@ class Array
   include ArrayHelpers
 end
 
-module FreeCite
+module Excite
 
   class ModelTest
 
