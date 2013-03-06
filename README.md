@@ -19,7 +19,7 @@ Derived from [FreeCite](http://freecite.library.brown.edu/), minus Rails and all
 The main changes are:
 * No UI, just a gem;
 * New model for parsing HTML;
-* Tokenization and part-of-speech features from [EngTagger](https://github.com/yohasebe/engtagger)
+* Tokenization and part-of-speech features from [EngTagger](https://github.com/yohasebe/engtagger).
 
 Credit is due to the authors of all the linked projects, as well as Laura Durkay who marked up the HTML training data.
 
