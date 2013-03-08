@@ -17,7 +17,7 @@ describe Excite do
 
     it "handles non-ASCII unicode characters" do
       cite = Excite.parse_string("Okuda, Michael, and Denise Okuda. 1993. Star trek chronology » The history of the future りがと. New York: Pocket Books.")
-      title_should_be(cite, "Star trek chronology » The history of the future")
+      title_should_be(cite, "Star trek chronology » The history of the future りがと")
     end
 
     it "handles non-citation string" do
@@ -117,6 +117,12 @@ describe Excite do
       title_should_be(cite, 'Intuitive versus rational judgment and the role of stereotyping in the human condition: Kirk or Spock')
     end
 
+    it "uses BR to separate sections" do
+      cite_str = "John Nerbonne, Paul Heggarty, Roeland van Hout and David Robey\n<br><a href=\"papers/panel-Methods-XIII-2009-final.pdf\">Panel\nDiscussion on Computing and the Humanities</a>. \n<i>International Journal of Humanities and Arts Computing</i>, Special\nIssue on <i>Language Variation</i> ed. by John Nerbonne, Charlotte\nGooskens, Sebastian Kürschner, and Renée van\nBezooijen. 2008. pp.19-37.  DOI: 10.13366/E1753854809000299"
+
+      cite = Excite.parse_html(cite_str)
+      title_should_be(cite, "Panel Discussion on Computing and the Humanities")
+    end
   end
 
   def title_should_be(cite, title)

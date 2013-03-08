@@ -403,12 +403,48 @@ module Excite
       result[2][:lname_with_given].should == 'lastName'
     end
 
+    it 'br token' do
+      toks = [Token.for_br(Nokogiri::HTML.fragment('<br/>').children.first)]
+
+      %w{
+          last_char first_1_char first_2_chars first_3_chars first_4_chars first_5_chars
+          last_1_char last_2_chars last_3_chars last_4_chars
+      }.each do |feature|
+        @crfparser.send(feature.to_sym, toks, 0).should == Token::BR_CHAR
+      end
+
+      @crfparser.toklcnp(toks, 0).should == 'EMPTY'
+      @crfparser.capitalization(toks, 0).should == 'others'
+      @crfparser.numbers(toks, 0).should == 'nonNum'
+      @crfparser.possible_editor(toks, 0).should == 'noEditors'
+      @crfparser.possible_chapter(toks, 0).should == 'noChapter'
+      @crfparser.is_in(toks, 0).should == 'notInBook'
+      @crfparser.location(toks, 0).should == 0
+      @crfparser.punct(toks, 0).should == 'hasPunct'
+      @crfparser.possible_volume(toks, 0).should == 'noVolume'
+      @crfparser.a_is_in_dict(toks, 0).should == 0
+
+      %w{ publisherName placeName monthName lastName firstName }.each do |feature|
+        first = feature.chr.upcase
+        rest = feature.slice(1..feature.length)
+        @crfparser.send(feature.to_sym, toks, 0).should == "no#{first}#{rest}"
+      end
+
+      @crfparser.tag_name(toks, 0).should == 'br'
+      @crfparser.location_in_node(toks, 0).should == 0
+      @crfparser.part_of_speech(toks, 0).should == 'br'
+    end
+
     private
 
     def tok_test_toklcnp(f, toks, idx)
       a = nil
       assert_nothing_raised{a = @crfparser.send(f, toks, idx)}
-      assert_equal(toks[idx].lcnp, a)
+      if toks[idx].lcnp.blank?
+        a.should == "EMPTY"
+      else
+        a.should == toks[idx].lcnp
+      end
     end
 
     def tok_test_placeName(f, toks, idx)

@@ -53,9 +53,9 @@ module Excite
 
     def last_char(toks, idx, author_names=nil)
       case toks[idx].raw[-1,1]
-        when /[a-z]/
+        when /[[:lower:]]/
           'a'
-        when /[A-Z]/
+        when /[[:upper:]]/
           'A'
         when /[0-9]/
           0
@@ -75,20 +75,24 @@ module Excite
     def last_3_chars(toks, idx, author_names=nil); toks[idx].raw[-3,3] || toks[idx].raw; end
     def last_4_chars(toks, idx, author_names=nil); toks[idx].raw[-4,4] || toks[idx].raw; end
 
-    def toklcnp(toks, idx, author_names=nil); toks[idx].lcnp; end
+    def toklcnp(toks, idx, author_names=nil)
+      if toks[idx].lcnp.blank?
+        "EMPTY"
+      else
+        toks[idx].lcnp
+      end
+    end
 
     def capitalization(toks, idx, author_names=nil)
       case toks[idx].np
-        when "EMPTY"
-          "others"
-        when /^[[:upper:]]$/
-          "singleCap"
-        when /^[[:upper:]][[:lower:]]+/
-          "InitCap"
-        when /^[[:upper:]]+$/
-          "AllCap"
-        else
-          "others"
+      when /^[[:upper:]]$/
+        "singleCap"
+      when /^[[:upper:]][[:lower:]]+/
+        "InitCap"
+      when /^[[:upper:]]+$/
+        "AllCap"
+      else
+        "others"
       end
     end
 
@@ -135,24 +139,12 @@ module Excite
       end
     end
 
-    # ignores idx
-    def is_proceeding(toks, idx=nil, author_names=nil)
-      if !@is_proceeding.nil?
-        @is_proceeding
-      else
-        @is_proceeding =
-          (toks.any? { |t|
-            %w( proc proceeding proceedings ).include?(t.lcnp.strip)
-          } ? 'isProc' : 'noProc')
-      end
-    end
-
     # TODO remove duplication with possible_chapter
     def is_in(toks, idx, author_names=nil)
       is_in = if idx > 0 && idx < (toks.length-1) && toks[idx].lcnp == 'in'
         prev_is_separator = ['pp','ppr','ppc','pps'].include?(toks[idx-1].part_of_speech)
         next_is_separator = ['ppl','ppc','pps'].include?(toks[idx+1].part_of_speech)
-        prev_is_separator && (next_is_separator || toks[idx+1].np =~ /^[A-Z]/)
+        prev_is_separator && (next_is_separator || toks[idx+1].np =~ /^[[:upper:]]/)
       end
       is_in ? "inBook" : "notInBook"
     end
@@ -239,11 +231,13 @@ module Excite
       'h5'=>'h',
       'h6'=>'h',
       'a'=>'a',
+      'br'=>'br',
       '#document-fragment'=>'unknown' # the actual tag wasn't captured in the fragment we're parsing
     }
 
     def tag_name(toks, idx, author_names=nil)
-      name = toks[idx].node.parent.name # node is always a text node; the informative one is the parent
+      node = toks[idx].node
+      name = node.text? ? node.parent.name : node.name
       NODE_TYPES_BY_NAME[name.downcase] || 'other'
     end
 

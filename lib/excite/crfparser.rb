@@ -75,9 +75,7 @@ module Excite
     end
 
     def self.strip_punct(str)
-      toknp = str.gsub(/[^\w]/, '')
-      toknp = "EMPTY" if toknp.blank? # TODO Seems maybe hacky
-      toknp
+      str.gsub(/[^[:alnum:]]/, '')
     end
 
     def normalize_input_author(str)
@@ -124,6 +122,14 @@ module Excite
         raise "Unused label" unless labels.empty?
       end
 
+      if @mode == :html
+        # drop leading and trailing <br>s; needs to be done after labels are applied
+        tokens = tokens.drop_while { |t| t.part_of_speech == 'br' }
+        tokens.reverse!
+        tokens = tokens.drop_while { |t| t.part_of_speech == 'br' }
+        tokens.reverse!
+      end
+
       self.clear
 
       return tokens
@@ -164,7 +170,11 @@ module Excite
 
       tokens = []
       html.traverse do |node|
-        tokens += html_text_node_2_tokens(node) if node.text?
+        if node.text?
+          tokens += html_text_node_2_tokens(node)
+        elsif node.name == 'br'
+          tokens << Token.for_br(node)
+        end
       end
       tokens
     end
@@ -282,10 +292,17 @@ module Excite
       @part_of_speech = part_of_speech
     end
 
+    BR_CHAR = "\a"
+
+    def self.for_br(node)
+      new(BR_CHAR,'br').is_in_node!(node, 0, 1)
+    end
+
     def is_in_node!(node, idx_in_node, node_token_count)
       @node = node
       @idx_in_node = idx_in_node
       @node_token_count = node_token_count
+      self
     end
 
     def raw
@@ -297,7 +314,7 @@ module Excite
     end
 
     def lcnp
-      @lcnp ||= np == "EMPTY" ? np : np.downcase
+      @lcnp ||= np.downcase
     end
 
     def empty?
@@ -313,6 +330,8 @@ module Excite
         raw
       elsif prev && ['ppd','ppl','lrb'].include?(prev.part_of_speech)
         raw
+      elsif 'br' == part_of_speech
+        " "
       else
         " "+raw
       end

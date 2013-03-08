@@ -23,8 +23,8 @@ module Excite
     # own normalization
     # Strip any leading and/or trailing punctuation and space
     def normalize(key, hsh)
-      hsh[key].gsub!(/^[^A-Za-z0-9]+/, '')
-      hsh[key].gsub!(/[^A-Za-z0-9]+$/, '')
+      hsh[key].gsub!(/^[^[:alnum:]]+/, '')
+      hsh[key].gsub!(/[^[:alnum:]]+$/, '')
     end
 
     # strip leading numerals
