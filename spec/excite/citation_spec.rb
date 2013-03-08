@@ -12,7 +12,7 @@ describe Excite do
     end
 
     it "handles string that used to break model" do
-      Excite.parse_string("[if gte mso 10]>\r\n<style>\r\n /* Style Definitions */\r\n table.MsoNormalTable\r\n\t{mso-style-name:\"Table Normal\";\r\n\tmso-tstyle-rowband-size:0;\r\n\tmso-tstyle-colband-size:0;\r\n\tmso-style-noshow:yes;\r\n\tmso-style-priority:99;\r\n\tmso-style-parent:\"\";\r\n\tmso-padding-alt:0in 5.4pt 0in 5.4pt;\r\n\tmso-para-margin:0in;\r\n\tmso-para-margin-bottom:.0001pt;\r\n\tmso-pagination:widow-orphan;\r\n\tfont-size:10.0pt;\r\n\tfont-family:\"Times New Roman\",\"serif\";}\r\n</style>\r\n<![endif]").has_year?.should be_false
+      Excite.parse_string("[if gte mso 10]>\r\n<style>\r\n /* Style Definitions */\r\n table.MsoNormalTable\r\n\t{mso-style-name:\"Table Normal\";\r\n\tmso-tstyle-rowband-size:0;\r\n\tmso-tstyle-colband-size:0;\r\n\tmso-style-noshow:yes;\r\n\tmso-style-priority:99;\r\n\tmso-style-parent:\"\";\r\n\tmso-padding-alt:0in 5.4pt 0in 5.4pt;\r\n\tmso-para-margin:0in;\r\n\tmso-para-margin-bottom:.0001pt;\r\n\tmso-pagination:widow-orphan;\r\n\tfont-size:10.0pt;\r\n\tfont-family:\"Times New Roman\",\"serif\";}\r\n</style>\r\n<![endif]")[:year].should be_nil
     end
 
     it "handles non-ASCII unicode characters" do
@@ -20,8 +20,8 @@ describe Excite do
       title_should_be(cite, "Star trek chronology » The history of the future")
     end
 
-    it "has_authors? returns false for non-citation string" do
-      Excite.parse_string("Recently while contemplating hosting options for my startup I decided to take a look at Heroku.").has_authors?.should be_false
+    it "handles non-citation string" do
+      Excite.parse_string("Recently while contemplating hosting options for my startup I decided to take a look at Heroku.")[:authors].should be_nil
     end
 
     it "parses title for APA journal article" do

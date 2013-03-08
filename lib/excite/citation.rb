@@ -43,20 +43,6 @@ private
       @overall_probability = overall_prob
     end
 
-    # TODO confusing that we have this but no helpers for actual values (or probabilities) - fix this
-    def method_missing(method_name)
-      if (md = method_name.to_s.match /^has_(\w+)\?$/)
-        has_field?(md[1].to_sym)
-      else
-        super
-      end
-    end
-
-    def has_field?(field)
-      value = self[field]
-      value.present? && value != self[:raw_string].strip && value.to_s.scan(/["”“]/).length != 1 # if the field has exactly one double quote, it's a good sign we didn't parse successfully TODO Move to postprocessor or out of gem
-    end
-
   end
 
 end
