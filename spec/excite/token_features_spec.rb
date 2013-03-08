@@ -422,7 +422,7 @@ module Excite
       @crfparser.location(toks, 0).should == 0
       @crfparser.punct(toks, 0).should == 'hasPunct'
       @crfparser.possible_volume(toks, 0).should == 'noVolume'
-      @crfparser.a_is_in_dict(toks, 0).should == 0
+      @crfparser.dict_status(toks, 0).should == 0
 
       %w{ publisherName placeName monthName lastName firstName }.each do |feature|
         first = feature.chr.upcase
@@ -577,7 +577,7 @@ module Excite
       assert(toks[idx].raw.end_with?(a))
     end
 
-    def tok_test_a_is_in_dict(f, toks, idx)
+    def tok_test_dict_status(f, toks, idx)
       n = nil
       assert_nothing_raised{n = @crfparser.send(f, toks, idx).class}
       assert_equal(Fixnum, n)

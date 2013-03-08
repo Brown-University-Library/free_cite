@@ -178,11 +178,6 @@ module Excite
       end
     end
 
-    # TODO this method is weirdly named b/c of alphabetical ordering hack: remove that
-    def a_is_in_dict(toks, idx, author_names=nil)
-      dict_status(toks, idx)
-    end
-
     def publisherName(toks, idx, author_names=nil)
       (dict_status(toks, idx) & DictFlags::PUBLISHER_NAME) > 0 ? 'publisherName' : 'noPublisherName'
     end
@@ -205,9 +200,9 @@ module Excite
       (dict_status(toks, idx) & DictFlags::FIRST_NAME) > 0 ? 'firstName' : 'noFirstName'
     end
 
-    def dict_status(toks, idx)
+    def dict_status(toks, idx, author_names=nil)
       @dict_status ||= [nil]*toks.length
-      @dict_status[idx] ||= (DICT[toks[idx].lcnp] || 0)
+      @dict_status[idx] ||= (DICT[toks[idx].lcnp] || DICT[toks[idx].raw.downcase] || 0)
     end
 
     NODE_TYPES_BY_NAME = {
