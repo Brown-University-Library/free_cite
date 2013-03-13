@@ -6,17 +6,11 @@
 
 
 order:
+    - sub_quotes_0
+    - sub_quotes_1
     - strip_quotes_0
-    - vol_0
-    - vol_1
-    - vol_2
-    - vol_iss_0
-    - iss_0
-    - eresource_0
-    - eresource_1
-#    - number_range_0 # not clear what this actually does
-#    - leading_source_0
-    
+
+# TODO Figure out which rules might be helpful, and which are dumber versions of model features
 rules:
     vol_0:
         # Description: be sure a whitespace exists between string 'vol.' and the actual volume number
@@ -59,6 +53,14 @@ rules:
         # Description: Many citations lead with the database they were found in: 'JSTOR', 'EBSCO', etc.  These need to be removed
         regex: ^(JSTOR|Blackwell Synergy)\W*
         ignore_case: true
+    sub_quotes_0:
+        # Replace non-ASCII double quotation marks
+        regex: "[“”‟„＂〝〞〟]"
+        replacement_str: '"'
+    sub_quotes_1:
+        # Replace non-ASCII single quotation marks
+        regex: "[‘’‛‚＇`]"
+        replacement_str: "'"
     strip_quotes_0:
         # Remove leading and trailing quotes from citation string
         regex: ^\s*\"(.*)\"\s*$

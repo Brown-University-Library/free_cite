@@ -1,8 +1,8 @@
-require 'free_cite/crfparser'
+require 'excite/crfparser'
 
 DIR = File.dirname(__FILE__)
 ROOT_DIR = "#{DIR}/../.."
-RESOURCES_DIR = "#{ROOT_DIR}/lib/free_cite/resources"
+RESOURCES_DIR = "#{ROOT_DIR}/lib/excite/resources"
 TAGGED_REFERENCES = "#{RESOURCES_DIR}/trainingdata/tagged_references.txt"
 TAGGED_HTML_REFERENCES = "#{RESOURCES_DIR}/trainingdata/tagged_html_references.txt"
 TRAINING_DATA = "#{DIR}/training_data.txt"
@@ -26,7 +26,7 @@ class Array
   include ArrayHelpers
 end
 
-module FreeCite
+module Excite
 
   class ModelTest
 

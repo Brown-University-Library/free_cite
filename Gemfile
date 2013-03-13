@@ -1,6 +1,8 @@
 # encoding: UTF-8
 
-source :rubygems
+source 'https://rubygems.org'
 
 # Specify your gem's dependencies in the gemspec
 gemspec
+
+gem 'engtagger', github: 'academia-edu/engtagger'
