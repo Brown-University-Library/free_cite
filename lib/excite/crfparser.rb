@@ -4,6 +4,7 @@ require 'tempfile'
 require 'nokogiri'
 require 'cgi'
 require 'engtagger'
+require 'yaml'
 
 module Excite
 
